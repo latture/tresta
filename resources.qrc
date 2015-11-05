@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/shaders/blinn_phong.frag</file>
+        <file>assets/shaders/blinn_phong.vert</file>
+        <file>assets/logo_64x64.png</file>
+        <file>assets/show-original_32x32.png</file>
+        <file>assets/show-deformed_32x32.png</file>
+        <file>assets/scale_32x32.png</file>
+        <file>assets/zoom_32x32.png</file>
+        <file>assets/pan_32x32.png</file>
+        <file>assets/rotate_32x32.png</file>
+        <file>assets/default-document-open.png</file>
+        <file>assets/window-close.png</file>
+    </qresource>
+</RCC>

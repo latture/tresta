@@ -1,0 +1,6 @@
+qt5_add_resources(tresta_resources ${PROJECT_SOURCE_DIR}/resources.qrc)
+qt5_wrap_cpp(tresta_wrapped_headers ${tresta_headers})
+add_library(tresta_lib ${tresta_sources})
+add_executable(tresta main.cpp ${tresta_resources} ${tresta_wrapped_headers})
+target_link_libraries(tresta tresta_lib ${OPENGL_LIBRARIES} boostlib)
+qt5_use_modules(tresta_lib Core Gui OpenGL)

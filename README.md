@@ -115,8 +115,12 @@ similar to:
 Either pressing the open icon or clicking on the file menu and selecting open
 will allow you to choose a configuration file. An example configuration file is
 in the `examples` folder. Before opening with tresta, change the path specified
-by `"nodes"`, `"elems"`, and `"displacements"` to the correct path on your
-computer. After selecting to open the properly configured `config.json` file
+by `"nodes"`, `"elems"`, `"props"`, and `"displacements"` to the correct path on your
+computer. By default the keys are specified relative to the default output path
+of the tresta binary (assuming that you placed the build output in a subfolder
+of the tresta root directory). If the executable is placed somewhere else,
+tresta will not find the files without modifying the paths in `config.json`. 
+After selecting to open the properly configured `config.json` file
 the following should open:
 
 ![Tresta opening screen](assets/screenshots/tresta_simple_cubic.png)

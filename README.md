@@ -9,8 +9,9 @@ The project requires Qt and CMake. If not installed, install both before continu
   1. Open the `tresta` root directory.
   2. create a folder named `build`.
   3. Open a terminal and navigate to the newly formed build directory.
-  4. Execute `cmake .. -DCMAKE_BUILD_TYPE=release`.
-    * Use `-DCMAKE_BUILD_TYPE=debug` if you would like to build the code for debugging purposes.
+  4. Execute `cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt`.
+    * By default this will build Tresta in release mode.
+      Use `-DCMAKE_BUILD_TYPE=debug` if you would like to build the code for debugging purposes.
     * `-DCMAKE_PREFIX_PATH=/path/to/qt` tells CMake where to find the Qt installation.
       For example, on my computer this would be set to `/home/ryan/Qt/5.5/gcc_64`.
   5. On Linux run `make` in the terminal from the build directory to build all the targets. On Windows the solution file will be located in the build directory. Open the solution file in Visual Studio and compile.

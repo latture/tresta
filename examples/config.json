@@ -1,5 +1,6 @@
 {
-    "nodes" : "/path/to/tresta/examples/nodes.csv",
-    "elems" : "/path/to/tresta/examples/elems.csv",
-    "displacements" : "/path/to/tresta/examples/nodal_displacements.csv",
+    "nodes" : "../../examples/nodes.csv",
+    "elems" : "../../examples/elems.csv",
+    "props" : "../../examples/props.csv",
+    "displacements" : "../../examples/nodal_displacements.csv"
 }

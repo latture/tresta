@@ -21,17 +21,18 @@ Introduction
 ------------
 This program is used for visualization of 3D truss structures.
 A truss is defined using CSV files to specify nodal positions,
-connections between nodes, and (optionally) displacements.
-The path to each of these files is specified using a JSON document.
-For example,
+connections between nodes (elements), elemental properties, and
+(optionally) displacements. The path to each of these files is specified using
+a JSON document. For example,
 
     {
-        "nodes" : "/path/to/nodes.csv"
-        "elems" : "/path/to/elems.csv"
+        "nodes" : "/path/to/nodes.csv",
+        "elems" : "/path/to/elems.csv",
+        "props" : "/path/to/elems.csv",
         "displacements" : "/path/to/displacements.csv"
     }
 
-The `"nodes"` and `"elems"` keys must be present. If `"displacements"` are
+The `"nodes"`, `"elems"`, and `"props"` keys must be present. If `"displacements"` are
 provided then both the original and deformed truss structure is rendered.
 This configuration file is used by tresta to load the structure. After launching
 the tresta binary, open a valid configuration file to display the structure.
@@ -67,6 +68,27 @@ The format of the element CSV file should be:
     ...
     elN_node_num_1,elN_node_num_2
 
+### Properties ###
+Elemental properties are the most complicated of the four possible JSON keys.
+Each row must have 7 floating point values in the form:
+
+    el1_EA,el1_EIz,el1_EIy,el1_GJ,el1_nvec_x_comp,el1_nvec_y_comp,el1_nvec_z_comp
+    el2_EA,el2_EIz,el2_EIy,el2_GJ,el2_nvec_x_comp,el2_nvec_y_comp,el2_nvec_z_comp
+    ...
+    ...
+    ...
+    elN_EA,elN_EIz,elN_EIy,elN_GJ,elN_nvec_x_comp,elN_nvec_y_comp,elN_nvec_z_comp
+
+`el1_EA` is the extensional stiffness of the first element, `el1_EIz` is the bending
+stiffness about the z-axis, `el1_EIy` is the bending stiffness about the y-axis,
+`el1_GJ` is the torsional stiffness, `el1_nvec_x_comp` is the x-component of element's
+normal vector, `el1_nvec_y_comp` is the y-component of element's
+normal vector, and `el1_nvec_z_comp` is the z-component of element's
+normal vector. The normal vector is defined as vector of unit length pointing
+along the beam's y-axis. Though it is complicated, in general a mesh generation
+tool should be writing this file for you. If not, contact me, and we can figure
+out how we could set a tool to write this file in an automated fashion.
+
 ### Displacements ###
 Displacements are optional, but if provided allow visualization of the deformed
 truss structure. This file will, in general, be computed by a finite element
@@ -85,6 +107,21 @@ in the x-, y-, and z-directions, respectively, and rx_1, ry_1, rz_1 are nodal
 rotations about each global coordinate axis.
 
 ### Example ###
-An example configuration file is in the `examples` folder.
-Before opening with tresta, change the path specified by `"nodes"`, `"elems"`,
-and `"displacements"` to the correct path on your computer.
+After a successful build, launching the `tresta` binary will open a window
+similar to:
+
+![Tresta opening screen](assets/screenshots/tresta_default.png)
+
+Either pressing the open icon or clicking on the file menu and selecting open
+will allow you to choose a configuration file. An example configuration file is
+in the `examples` folder. Before opening with tresta, change the path specified
+by `"nodes"`, `"elems"`, and `"displacements"` to the correct path on your
+computer. After selecting to open the properly configured `config.json` file
+the following should open:
+
+![Tresta opening screen](assets/screenshots/tresta_simple_cubic.png)
+
+The deformed shape is shown in red, and the original shape is shown in blue.
+In the case of the example, this is the result of crushing the simple cubic
+truss axially along the x-axis. For more information on specific controls
+click the about dialog from the help menu of tresta.

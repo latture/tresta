@@ -3,7 +3,7 @@ Tresta
 
 Getting started
 ---------------
-The project requires Qt and CMake. If not installed, install both before continuing.
+The project requires Qt and CMake. If not installed, please install both before continuing.
 
 ### To compile the code: ###
   1. Open the `tresta` root directory.
@@ -29,13 +29,16 @@ a JSON document. For example,
         "nodes" : "/path/to/nodes.csv",
         "elems" : "/path/to/elems.csv",
         "props" : "/path/to/elems.csv",
+        "colors" : "/path/to/colors.csv"
         "displacements" : "/path/to/displacements.csv"
     }
 
-The `"nodes"`, `"elems"`, and `"props"` keys must be present. If `"displacements"` are
-provided then both the original and deformed truss structure is rendered.
 This configuration file is used by tresta to load the structure. After launching
 the tresta binary, open a valid configuration file to display the structure.
+The `"nodes"`, `"elems"`, and `"props"` keys must be present. The "displacements" and "colors" keys are optional. 
+If `"displacements"` are provided then both the original and deformed truss structures are rendered.
+The `"colors"` key can be used to set RGBA colors on an element-by-element basis. 
+If not provided, a single color is used for the original and deformed meshes.
 
 CSV files
 ---------
@@ -88,6 +91,20 @@ normal vector. The normal vector is defined as vector of unit length pointing
 along the beam's y-axis. Though it is complicated, in general a mesh generation
 tool should be writing this file for you. If not, contact me, and we can figure
 out how we could set a tool to write this file in an automated fashion.
+
+### Colors ###
+Explicitly setting the colors is optional. 
+This is ideal when you need to set color on an element-by-element basis, e.g. applying a color map to the structure.
+If the `"colors"` key is not provided original and deformed colors can be set after opening in the toolbar, but the color will be applied to the entire mesh.
+Each row in the `colors.csv` file must have 4 floating point values on the range `[0.0,1.0]` specifying red, green, blue, and alpha values, respectively.
+If the `"colors"` key is provided, then it must contain the same number of rows as the `"elems"` key, i.e. all elements must be given a color. 
+For example if there are `N` elements, a sample `colors.csv` would have the form:
+
+    r_el1,g_el1,b_el1,a_el1
+    r_el2,g_el2,b_el2,a_el2
+    ...
+    ...
+    r_elN,g_elN,b_elN,a_elN
 
 ### Displacements ###
 Displacements are optional, but if provided allow visualization of the deformed

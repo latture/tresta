@@ -45,13 +45,13 @@ namespace tresta {
     std::vector<Displacement> createDisplacementVecFromJSON(const rapidjson::Document &config_doc);
 
     /**
-     * Parses the file indicated by the "colors" key in `config_doc` into a vector of `tresta::Color`'s.
+     * Parses the file indicated by the "colors" key in `config_doc` into a vector of `QColor`'s.
      *
      * @param config_doc `rapidjson::Document`. Document storing the file name of the csv file that contains
      *                    the elemental colors.
-     * @return colors. `std::vector<tresta::Color>`.
+     * @return colors. `std::vector<QColor>`.
      */
-    std::vector<Color> createColorVecFromJSON(const rapidjson::Document &config_doc);
+    std::vector<QColor> createColorVecFromJSON(const rapidjson::Document &config_doc);
 
     /**
      * Constructs the deformed elemental positions based on interpolation of nodal displacements.

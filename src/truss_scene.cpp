@@ -100,23 +100,36 @@ namespace tresta {
         }
 
         if (renderDeformed) {
-            updateModelColor(colorDialog.getDefColor(), mCylinderShader);
-            for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
-                for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
-                    renderCylinder(deformedVertexViewVectors[i][j]);
+            if (colorDialog.getUseUserColors()) {
+                for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
+                    updateModelColor(job.colors[i], mCylinderShader);
+                    for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
+                        renderCylinder(deformedVertexViewVectors[i][j]);
+                    }
+                }
+            }
+            else {
+                updateModelColor(colorDialog.getDefColor(), mCylinderShader);
+                for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
+                    for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
+                        renderCylinder(deformedVertexViewVectors[i][j]);
+                    }
                 }
             }
         }
 
         if (renderOriginal) {
-//            QColor color = QColor::fromRgbF(0.0824, 0.3961, 0.7529, 1.0);
-//            if (renderDeformed && displacementsProvided) {
-//                color.setAlphaF(0.5);
-//            }
-
-            updateModelColor(colorDialog.getOrigColor(), mCylinderShader);
-            for (size_t i = 0; i < job.elems.size(); ++i) {
-                renderCylinder(vertexViewVector[i]);
+            if (colorDialog.getUseUserColors()) {
+                for (size_t i = 0; i < job.elems.size(); ++i) {
+                    updateModelColor(job.colors[i], mCylinderShader);
+                    renderCylinder(vertexViewVector[i]);
+                }
+            }
+            else {
+                updateModelColor(colorDialog.getOrigColor(), mCylinderShader);
+                for (size_t i = 0; i < job.elems.size(); ++i) {
+                    renderCylinder(vertexViewVector[i]);
+                }
             }
         }
 

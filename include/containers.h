@@ -2,6 +2,7 @@
 #define TRESTA_CONTAINERS_H
 
 #include <Eigen/Core>
+#include <QColor>
 
 namespace tresta {
 
@@ -27,13 +28,6 @@ namespace tresta {
      * along the listed axis.
      */
     typedef Eigen::Matrix<float, 6, 1> Displacement;
-
-    /**
-     * @brief Color specified as `[R, G, B, A]`.
-     * @details Colors specify custom elemental colors. A color must have 4 entries in the order
-     * `[Red, Gree, Blue, Alpha]`, where each entry is defined on the interval \f$[0,1]\f$.
-     */
-    typedef Eigen::Matrix<float, 4, 1> Color;
 
     /**
      * @brief The set of properties associated with an element.
@@ -113,7 +107,7 @@ namespace tresta {
             const std::vector<Elem> &elems,
             const std::vector<Displacement> &displacements,
             const std::vector<std::vector<Node>> &node_strips,
-            const std::vector<Color> &colors) :
+            const std::vector<QColor> &colors) :
                 nodes(nodes),
                 elems(elems),
                 displacements(displacements),
@@ -136,7 +130,7 @@ namespace tresta {
         /**<List of nodal displacements to apply to the nodes*/
         std::vector<std::vector<Node>> node_strips;
         /**<Interpolated deformed nodal coordinates.*/
-        std::vector<Color> colors;/**<Color to render each element.*/
+        std::vector<QColor> colors;/**<Color to render each element.*/
     };
 
     enum DOF {

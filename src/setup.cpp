@@ -197,7 +197,7 @@ namespace tresta {
         return disp_out;
     }
 
-    std::vector<Color> createColorVecFromJSON(const rapidjson::Document &config_doc) {
+    std::vector<QColor> createColorVecFromJSON(const rapidjson::Document &config_doc) {
         std::vector<std::vector<float> > color_vec;
 
         if (config_doc.HasMember("colors")) {
@@ -209,7 +209,7 @@ namespace tresta {
             }
         }
 
-        std::vector<Color> color_out(color_vec.size());
+        std::vector<QColor> color_out(color_vec.size());
 
         for (size_t i = 0; i < color_vec.size(); ++i) {
             if (color_vec[i].size() != 4) {
@@ -217,7 +217,7 @@ namespace tresta {
                         (boost::format("Row %d in colors does not specify [R, G, B, A] values.") % i).str()
                 );
             }
-            color_out[i] << color_vec[i][0], color_vec[i][1], color_vec[i][2], color_vec[i][3];
+            color_out[i] = QColor::fromRgbF(color_vec[i][0], color_vec[i][1], color_vec[i][2], color_vec[i][3]);
         }
         return color_out;
     }
@@ -330,7 +330,7 @@ namespace tresta {
             std::vector<Node> nodes = createNodeVecFromJSON(config_doc);
             std::vector<Elem> elems = createElemVecFromJSON(config_doc);
             std::vector<Displacement> disp = createDisplacementVecFromJSON(config_doc);
-            std::vector<Color> colors = createColorVecFromJSON(config_doc);
+            std::vector<QColor> colors = createColorVecFromJSON(config_doc);
             std::vector<std::vector<Node>> node_strips;
             if (disp.size() > 0) {
                 node_strips = createNodeStrips(nodes, elems, disp, 1.0f);

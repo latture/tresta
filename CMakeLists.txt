@@ -29,24 +29,25 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 add_library(boostlib ${EXT_BOOST_ROOT}/libs/smart_ptr/src/sp_collector.cpp
                      ${EXT_BOOST_ROOT}/libs/smart_ptr/src/sp_debug_hooks.cpp)
 
-set(CMAKE_PREFIX_PATH "/Users/ryan/Qt/5.5/clang_64/" CACHE STRING "Path to Qt.")
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(OpenGL REQUIRED)
 
-set(tresta_headers ${TRESTA_INCLUDE}/containers.h
-                   ${TRESTA_INCLUDE}/cylinder.h
-                   ${TRESTA_INCLUDE}/sphere.h
-                   ${TRESTA_INCLUDE}/abstract_scene.h
-                   ${TRESTA_INCLUDE}/truss_scene.h
-                   ${TRESTA_INCLUDE}/window.h
-                   ${TRESTA_INCLUDE}/mainwindow.h
-                   ${TRESTA_INCLUDE}/csv_parser.h
-                   ${TRESTA_INCLUDE}/glassert.h
-                   ${TRESTA_INCLUDE}/setup.h)
+set(tresta_headers ${TRESTA_INCLUDE}/abstract_scene.h
+        ${TRESTA_INCLUDE}/color_dialog.h
+        ${TRESTA_INCLUDE}/containers.h
+        ${TRESTA_INCLUDE}/csv_parser.h
+        ${TRESTA_INCLUDE}/cylinder.h
+        ${TRESTA_INCLUDE}/glassert.h
+        ${TRESTA_INCLUDE}/mainwindow.h
+        ${TRESTA_INCLUDE}/setup.h
+        ${TRESTA_INCLUDE}/sphere.h
+        ${TRESTA_INCLUDE}/truss_scene.h
+        ${TRESTA_INCLUDE}/window.h)
 
-set(tresta_sources ${TRESTA_SRC}/cylinder.cpp
+set(tresta_sources ${TRESTA_SRC}/color_dialog.cpp
+        ${TRESTA_SRC}/cylinder.cpp
                    ${TRESTA_SRC}/setup.cpp
                    ${TRESTA_SRC}/sphere.cpp
                    ${TRESTA_SRC}/truss_scene.cpp

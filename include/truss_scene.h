@@ -7,6 +7,7 @@
 
 #include "abstract_scene.h"
 #include "containers.h"
+#include "color_dialog.h"
 #include "cylinder.h"
 #include "sphere.h"
 
@@ -116,6 +117,8 @@ namespace tresta {
         Sphere sphere;
         Cylinder cylinder;
 
+        ColorDialog colorDialog;
+
         float time;
         float camera_z0;
         float deformation_scale;
@@ -139,7 +142,8 @@ namespace tresta {
         void prepareShaders();
         void prepareVertexBuffers();
         void updateModelMatrices(QOpenGLShaderProgram &shader);
-        void updateModelColor(const QVector4D &color, QOpenGLShaderProgram &shader);
+
+        void updateModelColor(const QColor &color, QOpenGLShaderProgram &shader);
         void updateVertexMatrix(const QMatrix4x4 &vertexView, QOpenGLShaderProgram &shader);
         void updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader);
         void updateLightPosition(const QVector3D &position, QOpenGLShaderProgram &shader);

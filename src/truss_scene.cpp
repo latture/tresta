@@ -12,6 +12,7 @@ namespace tresta {
             : mSphereShader(),
               mCylinderShader(),
               job(_job),
+              colorDialog(_job.colors.size() > 0, _job.displacements.size() > 0),
               time(0.0f),
               deformation_scale(1.0),
               camera_inertia(0.1f),
@@ -99,8 +100,7 @@ namespace tresta {
         }
 
         if (renderDeformed) {
-            QVector4D color(0.7176, 0.1098, 0.1098, 1.0);
-            updateModelColor(color, mCylinderShader);
+            updateModelColor(colorDialog.getDefColor(), mCylinderShader);
             for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
                 for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
                     renderCylinder(deformedVertexViewVectors[i][j]);
@@ -109,12 +109,12 @@ namespace tresta {
         }
 
         if (renderOriginal) {
-            QVector4D color(0.0824, 0.3961, 0.7529, 1.0);
-            if (renderDeformed && displacementsProvided) {
-                color.setW(0.5);
-            }
+//            QColor color = QColor::fromRgbF(0.0824, 0.3961, 0.7529, 1.0);
+//            if (renderDeformed && displacementsProvided) {
+//                color.setAlphaF(0.5);
+//            }
 
-            updateModelColor(color, mCylinderShader);
+            updateModelColor(colorDialog.getOrigColor(), mCylinderShader);
             for (size_t i = 0; i < job.elems.size(); ++i) {
                 renderCylinder(vertexViewVector[i]);
             }
@@ -165,6 +165,10 @@ namespace tresta {
                 else
                     QMessageBox::warning(0, QString("Warning"),
                                          QString("Cannot toggle deformed shape.\nNo displacements provided."));
+                break;
+
+            case Qt::Key_C:
+                colorDialog.exec();
                 break;
 
             default:
@@ -227,7 +231,7 @@ namespace tresta {
                                                                 float z_scale_multiplier) {
         std::vector<QMatrix4x4> vector_out;
         vector_out.reserve(elems.size());
-        unsigned int nn1, nn2;
+        int nn1, nn2;
         float angle, length;
         Node node1, node2, dn, rot_axis, y_axis, z_axis;
         QMatrix4x4 current_matrix;
@@ -377,7 +381,7 @@ namespace tresta {
         shader.setUniformValue("modelnormal", modelnormal);
     }
 
-    void TrussScene::updateModelColor(const QVector4D &color, QOpenGLShaderProgram &shader) {
+    void TrussScene::updateModelColor(const QColor &color, QOpenGLShaderProgram &shader) {
         assert(shadersInitialized);
 
         shader.bind();

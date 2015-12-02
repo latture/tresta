@@ -2,7 +2,6 @@
 #include <iostream>
 #include "mainwindow.h"
 #include "setup.h"
-#include "window.h"
 
 namespace tresta {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -53,6 +52,10 @@ namespace tresta {
     void MainWindow::setScalePressed()
     {
         sendKey(Qt::Key_S);
+    }
+
+    void MainWindow::setColorPressed() {
+        sendKey(Qt::Key_C);
     }
 
     void MainWindow::zoomPressed()
@@ -127,6 +130,10 @@ namespace tresta {
         setScaleAct->setStatusTip(tr("Set scale multiplier for deformations"));
         connect(setScaleAct, SIGNAL(triggered()), this, SLOT(setScalePressed()));
 
+        setColorAct = new QAction(QIcon(":/assets/gtk-select-color_32x32.png"), tr("&Choose colors"), this);
+        setColorAct->setStatusTip(tr("Choose colors for current scene"));
+        connect(setColorAct, SIGNAL(triggered()), this, SLOT(setColorPressed()));
+
         zoomAct = new QAction(QIcon(":/assets/zoom_32x32.png"), tr("Adjust camera &zoom"), this);
         zoomAct->setStatusTip(tr("Adjust camera zoom"));
         connect(zoomAct, SIGNAL(triggered()), this, SLOT(zoomPressed()));
@@ -198,6 +205,9 @@ namespace tresta {
 
         setScaleButton = new QToolButton(this);
         setScaleButton->setDefaultAction(setScaleAct);
+
+        setColorButton = new QToolButton(this);
+        setColorButton->setDefaultAction(setColorAct);
     }
 
 
@@ -211,6 +221,7 @@ namespace tresta {
         toolBar->addWidget(panButton);
         toolBar->addWidget(rotateButton);
         toolBar->addWidget(setScaleButton);
+        toolBar->addWidget(setColorButton);
 
     }
 

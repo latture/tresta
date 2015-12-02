@@ -11,5 +11,6 @@
         <file>assets/rotate_32x32.png</file>
         <file>assets/default-document-open.png</file>
         <file>assets/window-close.png</file>
+        <file>assets/gtk-select-color_32x32.png</file>
     </qresource>
 </RCC>

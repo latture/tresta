@@ -20,12 +20,26 @@ namespace tresta {
      */
     typedef Eigen::Vector3f Node;
 
+    /**
+     * @brief Nodal displacement.
+     * @details Displacements are given in the form `[dx, dy, dz, rx, ry, rz]`,
+     * where `d_` specifies translational displacement along the listed axis, and `r_` specifies rotational displacement
+     * along the listed axis.
+     */
     typedef Eigen::Matrix<float, 6, 1> Displacement;
 
     /**
+     * @brief Color specified as `[R, G, B, A]`.
+     * @details Colors specify custom elemental colors. A color must have 4 entries in the order
+     * `[Red, Gree, Blue, Alpha]`, where each entry is defined on the interval \f$[0,1]\f$.
+     */
+    typedef Eigen::Matrix<float, 4, 1> Color;
+
+    /**
      * @brief The set of properties associated with an element.
-     * @details The properties must define the extensional stiffness, \f$EA\f$, bending stiffness parallel to the local z-axis \f$EI_{z}\f$,
-     * bending stiffness parallel to the local y-axis\f$EI_{y}\f$, the torsional stiffness, \f$GJ\f$, and a vector pointing along the beam elements local y-axis.
+     * @details The properties must define the extensional stiffness, \f$EA\f$, bending stiffness parallel to the
+     * local z-axis \f$EI_{z}\f$, bending stiffness parallel to the local y-axis\f$EI_{y}\f$, the torsional stiffness,
+     * \f$GJ\f$, and a vector pointing along the beam elements local y-axis.
      *
      * @code
      * float EA = 1000.0;
@@ -87,22 +101,42 @@ namespace tresta {
         }
     };
 
+    /**
+     * @brief Contains all the required information to render a mesh.
+     * @details A job holds information on the node and element lists as well as any nodal displacements, deformed
+     * element shapes, and elemental colors.
+     */
     struct Job {
 
         Job() {};
         Job(const std::vector<Node> &nodes,
             const std::vector<Elem> &elems,
             const std::vector<Displacement> &displacements,
-            const std::vector<std::vector<Node>> &node_strips) :
-            nodes(nodes),
-            elems(elems),
-            displacements(displacements),
-            node_strips(node_strips) {}
+            const std::vector<std::vector<Node>> &node_strips,
+            const std::vector<Color> &colors) :
+                nodes(nodes),
+                elems(elems),
+                displacements(displacements),
+                node_strips(node_strips),
+                colors(colors) {
+            if (colors.size() > 0) {
+                assert(elems.size() == colors.size() && "Elements and colors are not the same length.");
+            }
+            if (displacements.size() > 0) {
+                assert(displacements.size() == nodes.size() && "Nodes and displacements are not the same length.");
+            }
+        }
 
         std::vector<Node> nodes;
+        /**<List of nodal coordinates specifying \f$(x, y, z)\f$ positions.*/
         std::vector<Elem> elems;
+        /**<List of elements specifying which nodal indices are connected with an element
+                                            as well as the associated elemental properties.*/
         std::vector<Displacement> displacements;
+        /**<List of nodal displacements to apply to the nodes*/
         std::vector<std::vector<Node>> node_strips;
+        /**<Interpolated deformed nodal coordinates.*/
+        std::vector<Color> colors;/**<Color to render each element.*/
     };
 
     enum DOF {

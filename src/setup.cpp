@@ -31,7 +31,9 @@ namespace tresta {
             }
         }
 
-        void updateTransforms(const Node &nx, const Node &ny, Eigen::Matrix<float, 12, 12, Eigen::RowMajor> &Aelem, Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &transform_components) {
+        void updateTransforms(const Node &nx, const Node &ny,
+                              Eigen::Matrix<float, 12, 12, Eigen::RowMajor> &Aelem,
+                              Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &transform_components) {
             // calculate the unit normal vector in local z direction
             Node nz;
             nz = nx.cross(ny);
@@ -190,9 +192,34 @@ namespace tresta {
                 );
             }
             disp_out[i] << disp_vec[i][0], disp_vec[i][1], disp_vec[i][2],
-                           disp_vec[i][3], disp_vec[i][4], disp_vec[i][5];
+                    disp_vec[i][3], disp_vec[i][4], disp_vec[i][5];
         }
         return disp_out;
+    }
+
+    std::vector<Color> createColorVecFromJSON(const rapidjson::Document &config_doc) {
+        std::vector<std::vector<float> > color_vec;
+
+        if (config_doc.HasMember("colors")) {
+            try {
+                createVectorFromJSON(config_doc, "colors", color_vec);
+            }
+            catch (std::runtime_error &e) {
+                throw;
+            }
+        }
+
+        std::vector<Color> color_out(color_vec.size());
+
+        for (size_t i = 0; i < color_vec.size(); ++i) {
+            if (color_vec[i].size() != 4) {
+                throw std::runtime_error(
+                        (boost::format("Row %d in colors does not specify [R, G, B, A] values.") % i).str()
+                );
+            }
+            color_out[i] << color_vec[i][0], color_vec[i][1], color_vec[i][2], color_vec[i][3];
+        }
+        return color_out;
     }
 
     std::vector<std::vector<Node>> createNodeStrips(const std::vector<Node> &nodes,
@@ -204,7 +231,8 @@ namespace tresta {
 
         if (displacements.size() != nodes.size()) {
             throw std::runtime_error(
-                    (boost::format("Number of rows in displacements (%d) do not match the number number of nodes(%d).") % displacements.size() % nodes.size()).str()
+                    (boost::format("Number of rows in displacements (%d) do not match the number number of nodes (%d).")
+                     % displacements.size() % nodes.size()).str()
             );
         }
 
@@ -302,12 +330,19 @@ namespace tresta {
             std::vector<Node> nodes = createNodeVecFromJSON(config_doc);
             std::vector<Elem> elems = createElemVecFromJSON(config_doc);
             std::vector<Displacement> disp = createDisplacementVecFromJSON(config_doc);
+            std::vector<Color> colors = createColorVecFromJSON(config_doc);
             std::vector<std::vector<Node>> node_strips;
             if (disp.size() > 0) {
                 node_strips = createNodeStrips(nodes, elems, disp, 1.0f);
             }
+            if (colors.size() > 0 && elems.size() != colors.size()) {
+                throw std::runtime_error(
+                        (boost::format("Number of rows in colors (%d) do not match the number number of elements (%d).")
+                         % colors.size() % nodes.size()).str()
+                );
+            }
 
-            return Job(nodes, elems, disp, node_strips);
+            return Job(nodes, elems, disp, node_strips, colors);
         }
         catch (std::exception &e) {
             throw;

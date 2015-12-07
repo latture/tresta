@@ -123,7 +123,8 @@ where dx_1, dy_1, and dz_1 are the translational displacements applied to node 1
 in the x-, y-, and z-directions, respectively, and rx_1, ry_1, rz_1 are nodal
 rotations about each global coordinate axis.
 
-### Example ###
+Example
+-------
 After a successful build, launching the `tresta` binary will open a window
 similar to:
 

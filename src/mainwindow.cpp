@@ -103,11 +103,11 @@ namespace tresta {
     }
 
     void MainWindow::clearWindowWidget() {
-        if (glWindow) {
-            delete glWindow;
-        }
         if (glWidget) {
-            delete glWidget;
+            glWidget->deleteLater();
+        }
+        if (glWindow) {
+            glWindow->deleteLater();
         }
     }
 

@@ -41,6 +41,12 @@ namespace tresta {
          */
         void render();
 
+        /** Render in demo mode.
+         *
+         * @param frameNumber int. Current frame on the range `[0, 359]`. If a numbers `>359` will be wrapped around, i.e. `frameNumber %= 360`.
+         */
+        void demo(int frameNumber);
+
         /**
          * Updates the projection uniform variables for the shaders and sets the viewport size.
          * @param width  Window width.
@@ -128,6 +134,7 @@ namespace tresta {
         bool renderDeformed;
         bool displacementsProvided;
 
+        void setCamera(float tx, float ty, float tz, float rx, float ry, float rz);
         void renderCylinder(const QMatrix4x4 &vertexView);
         void renderSphere(const QMatrix4x4 &vertexView);
 

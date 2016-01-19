@@ -59,7 +59,7 @@ namespace tresta {
         float green = 1.0f;
         float blue = 1.0f;
 
-        mGLFunc->glClearColor(red, green, blue, 0.0);
+        mGLFunc->glClearColor(red, green, blue, 1.0);
 
         prepareShaders();
         prepareVertexBuffers();
@@ -93,11 +93,6 @@ namespace tresta {
         updateModelMatrices(mCylinderShader);
         cylinder.mVAO.bind();
 
-        if (!renderOriginal || !renderDeformed)
-            mGLFunc->glEnable(GL_CULL_FACE);
-        else {
-            mGLFunc->glDisable(GL_CULL_FACE);
-        }
 
         if (renderDeformed) {
             if (colorDialog.getUseUserColors()) {
@@ -144,6 +139,19 @@ namespace tresta {
         // }
 
         glCheckError();
+    }
+
+    void TrussScene::demo(int frameNumber) {
+        float tx = 0.0f;
+        float ty = 0.0f;
+        float tz = 0.35f * camera_z0;
+
+        float rx = 10.0f;
+        float ry = frameNumber % 360;
+        float rz = 0.0f;
+
+        setCamera(tx, ty, tz, rx, ry, rz);
+        render();
     }
 
     void TrussScene::resize(int width, int height) {
@@ -212,6 +220,16 @@ namespace tresta {
 
     float TrussScene::getDeformationScale() const {
         return deformation_scale;
+    }
+
+    void TrussScene::setCamera(float tx, float ty, float tz, float rx, float ry, float rz) {
+        camera_trans[0] = camera_trans_lag[0] = tx;
+        camera_trans[1] = camera_trans_lag[1] = ty;
+        camera_trans[2] = camera_trans_lag[2] = tz;
+
+        camera_rot[0] = camera_rot_lag[0] = rx;
+        camera_rot[1] = camera_rot_lag[1] = ry;
+        camera_rot[2] = camera_rot_lag[2] = rz;
     }
 
     void TrussScene::renderCylinder(const QMatrix4x4 &vertexView) {

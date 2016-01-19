@@ -5,6 +5,7 @@
 
 #include "truss_scene.h"
 #include "containers.h"
+#include "demo_dialog.h"
 
 class QMouseEvent;
 class QOpenGLContext;
@@ -26,9 +27,13 @@ namespace tresta {
         void zoomChanged(bool isEnabled);
         void panChanged(bool isEnabled);
 
+        void demoChanged(bool isEnabled);
+
     protected slots:
         void resizeGl();
         void paintGl();
+
+        void demo();
         void updateScene();
         void mousePressEvent(QMouseEvent * e);
         void mouseMoveEvent(QMouseEvent *e);
@@ -38,6 +43,8 @@ namespace tresta {
     private:
         QOpenGLContext *mContext;
         QScopedPointer<TrussScene> mScene;
+        QString demoSaveDirectory;
+        DemoDialog demoDialog;
 
         bool rotatePressed;
         bool keyboardRotate;
@@ -46,8 +53,10 @@ namespace tresta {
         bool zoomPressed;
         bool keyboardZoom;
         bool keyboardOverride;
+        bool demoMode;
 
         int currX, currY;
+        int currDemoFrame;
 
         void printContextInfos();
         void initializeGl();

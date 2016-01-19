@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QScreen>
+#include <QtWidgets/qfiledialog.h>
 
 #include "glassert.h"
 
@@ -30,13 +31,16 @@ namespace tresta {
     Window::Window(Job &job, QScreen *screen) :
             QWindow(screen),
             mScene(new TrussScene(job)),
+            demoSaveDirectory(QDir::currentPath()),
             rotatePressed(false),
             keyboardRotate(false),
             translatePressed(false),
             keyboardTranslate(false),
             zoomPressed(false),
             keyboardZoom(false),
-            keyboardOverride(false) {
+            keyboardOverride(false),
+            demoMode(false),
+            currDemoFrame(0) {
         setSurfaceType(OpenGLSurface);
 
         create();
@@ -83,10 +87,26 @@ namespace tresta {
     }
 
     void Window::paintGl() {
-        if (!isExposed()) return;
+        if (!isExposed())
+            return;
+
         mContext->makeCurrent(this);
-        mScene->render();
+        if (demoMode)
+            demo();
+        else
+            mScene->render();
         mContext->swapBuffers(this);
+    }
+
+    void Window::demo() {
+        currDemoFrame %= 360;
+        mScene->demo(currDemoFrame);
+        QString filename = demoDialog.getDirectory() + "/" + demoDialog.getFilenamePrefix() + "_" +
+                           QString::number(currDemoFrame) + ".png";
+        if (!screen()->grabWindow(winId()).save(filename, qPrintable("PNG")))
+            throw std::runtime_error("Frame could not be saved.");
+
+        ++currDemoFrame;
     }
 
     void Window::resizeGl() {
@@ -203,6 +223,21 @@ namespace tresta {
                 emit zoomChanged(keyboardZoom);
                 emit panChanged(keyboardTranslate);
                 emit rotateChanged(keyboardRotate);
+                break;
+
+            case Qt::Key_F:
+                if (demoMode) {
+                    demoMode = false;
+                    currDemoFrame = 0;
+                }
+                else {
+                    demoDialog.exec();
+                    if (demoDialog.result()) {
+                        demoMode = true;
+                    }
+                }
+
+                emit demoChanged(demoMode);
                 break;
 
             default:

@@ -73,6 +73,10 @@ namespace tresta {
         sendKey(Qt::Key_R);
     }
 
+    void MainWindow::demoPressed() {
+        sendKey(Qt::Key_F);
+    }
+
     void MainWindow::zoomChanged(bool isEnabled) {
         zoomButton->setChecked(isEnabled);
     }
@@ -83,6 +87,14 @@ namespace tresta {
 
     void MainWindow::rotateChanged(bool isEnabled) {
         rotateButton->setChecked(isEnabled);
+    }
+
+    void MainWindow::demoChanged(bool isEnabled) {
+        demoButton->setChecked(isEnabled);
+        if (isEnabled)
+            statusBar()->showMessage(tr("Demo mode"), 0);
+        else
+            statusBar()->clearMessage();
     }
 
     void MainWindow::about()
@@ -98,7 +110,10 @@ namespace tresta {
                                  "Key Z:\ttoggle zoom (left mouse)\r\n"
                                  "Key P:\ttoggle pan (left mouse)\r\n"
                                  "Key R:\ttoggle rotate (left mouse)\r\n"
-                                 "Key S:\tscale deformation\r\n");
+                                 "Key S:\tscale deformation\r\n"
+                                 "Key C:\tchoose colors\r\n"
+                                 "Key F:\ttoggle demo mode\r\n"
+       );
         QMessageBox::about(this, tr("About Tresta"), aboutText);
     }
 
@@ -146,6 +161,10 @@ namespace tresta {
         rotateAct->setStatusTip(tr("Rotate camera"));
         connect(rotateAct, SIGNAL(triggered()), this, SLOT(rotatePressed()));
 
+        demoAct = new QAction(QIcon(":/assets/camera_32x32.png"), tr("&Enter demo mode and save frames"), this);
+        demoAct->setStatusTip(tr("Enter demo mode"));
+        connect(demoAct, SIGNAL(triggered()), this, SLOT(demoPressed()));
+
         exitAct = new QAction(QIcon(":/assets/window-close.png"), tr("E&xit"), this);
         exitAct->setShortcuts(QKeySequence::Quit);
         exitAct->setStatusTip(tr("Exit the application"));
@@ -172,6 +191,8 @@ namespace tresta {
         editMenu->addAction(panAct);
         editMenu->addAction(rotateAct);
         editMenu->addAction(setScaleAct);
+        editMenu->addAction(setColorAct);
+        editMenu->addAction(demoAct);
 
         menuBar()->addSeparator();
 
@@ -203,6 +224,10 @@ namespace tresta {
         rotateButton->setDefaultAction(rotateAct);
         rotateButton->setCheckable(true);
 
+        demoButton = new QToolButton(this);
+        demoButton->setDefaultAction(demoAct);
+        demoButton->setCheckable(true);
+
         setScaleButton = new QToolButton(this);
         setScaleButton->setDefaultAction(setScaleAct);
 
@@ -222,6 +247,7 @@ namespace tresta {
         toolBar->addWidget(rotateButton);
         toolBar->addWidget(setScaleButton);
         toolBar->addWidget(setColorButton);
+        toolBar->addWidget(demoButton);
 
     }
 
@@ -256,6 +282,7 @@ namespace tresta {
             connect(glWindow, SIGNAL(zoomChanged(bool)), this, SLOT(zoomChanged(bool)));
             connect(glWindow, SIGNAL(panChanged(bool)), this, SLOT(panChanged(bool)));
             connect(glWindow, SIGNAL(rotateChanged(bool)), this, SLOT(rotateChanged(bool)));
+            connect(glWindow, SIGNAL(demoChanged(bool)), this, SLOT(demoChanged(bool)));
         }
         catch (std::exception &e) {
             std::cerr << "error: " << e.what() << std::endl;

@@ -122,6 +122,10 @@ namespace tresta {
             glWidget->deleteLater();
         }
         if (glWindow) {
+            disconnect(glWindow, &Window::zoomChanged, this, &MainWindow::zoomChanged);
+            disconnect(glWindow, &Window::panChanged, this, &MainWindow::panChanged);
+            disconnect(glWindow, &Window::rotateChanged, this, &MainWindow::rotateChanged);
+            disconnect(glWindow, &Window::demoChanged, this, &MainWindow::demoChanged);
             glWindow->deleteLater();
         }
     }
@@ -131,48 +135,48 @@ namespace tresta {
         openAct = new QAction(QIcon(":/assets/default-document-open.png"), tr("&Open..."), this);
         openAct->setShortcuts(QKeySequence::Open);
         openAct->setStatusTip(tr("Open an existing file"));
-        connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+        connect(openAct, &QAction::triggered, this, &MainWindow::open);
 
         plotOriginalAct = new QAction(QIcon(":/assets/show-original_32x32.png"), tr("Plot o&riginal shape"), this);
         plotOriginalAct->setStatusTip(tr("Toggle display of the original shape"));
-        connect(plotOriginalAct, SIGNAL(triggered()), this, SLOT(plotOriginalPressed()));
+        connect(plotOriginalAct, &QAction::triggered, this, &MainWindow::plotOriginalPressed);
 
         plotDeformedAct = new QAction(QIcon(":/assets/show-deformed_32x32.png"), tr("Plot &deformed shape"), this);
         plotDeformedAct->setStatusTip(tr("Toggle display of the deformed shape"));
-        connect(plotDeformedAct, SIGNAL(triggered()), this, SLOT(plotDeformedPressed()));
+        connect(plotDeformedAct, &QAction::triggered, this, &MainWindow::plotDeformedPressed);
 
         setScaleAct = new QAction(QIcon(":/assets/scale_32x32.png"), tr("&Set deformation scale"), this);
         setScaleAct->setStatusTip(tr("Set scale multiplier for deformations"));
-        connect(setScaleAct, SIGNAL(triggered()), this, SLOT(setScalePressed()));
+        connect(setScaleAct, &QAction::triggered, this, &MainWindow::setScalePressed);
 
         setColorAct = new QAction(QIcon(":/assets/gtk-select-color_32x32.png"), tr("&Choose colors"), this);
         setColorAct->setStatusTip(tr("Choose colors for current scene"));
-        connect(setColorAct, SIGNAL(triggered()), this, SLOT(setColorPressed()));
+        connect(setColorAct, &QAction::triggered, this, &MainWindow::setColorPressed);
 
         zoomAct = new QAction(QIcon(":/assets/zoom_32x32.png"), tr("Adjust camera &zoom"), this);
         zoomAct->setStatusTip(tr("Adjust camera zoom"));
-        connect(zoomAct, SIGNAL(triggered()), this, SLOT(zoomPressed()));
+        connect(zoomAct, &QAction::triggered, this, &MainWindow::zoomPressed);
 
         panAct = new QAction(QIcon(":/assets/pan_32x32.png"), tr("&Pan camera"), this);
         panAct->setStatusTip(tr("Pan camera"));
-        connect(panAct, SIGNAL(triggered()), this, SLOT(panPressed()));
+        connect(panAct, &QAction::triggered, this, &MainWindow::panPressed);
 
         rotateAct = new QAction(QIcon(":/assets/rotate_32x32.png"), tr("&Rotate camera"), this);
         rotateAct->setStatusTip(tr("Rotate camera"));
-        connect(rotateAct, SIGNAL(triggered()), this, SLOT(rotatePressed()));
+        connect(rotateAct, &QAction::triggered, this, &MainWindow::rotatePressed);
 
         demoAct = new QAction(QIcon(":/assets/camera_32x32.png"), tr("&Enter demo mode and save frames"), this);
         demoAct->setStatusTip(tr("Enter demo mode"));
-        connect(demoAct, SIGNAL(triggered()), this, SLOT(demoPressed()));
+        connect(demoAct, &QAction::triggered, this, &MainWindow::demoPressed);
 
         exitAct = new QAction(QIcon(":/assets/window-close.png"), tr("E&xit"), this);
         exitAct->setShortcuts(QKeySequence::Quit);
         exitAct->setStatusTip(tr("Exit the application"));
-        connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+        connect(exitAct, &QAction::triggered, this, &MainWindow::close);
 
         aboutAct = new QAction(tr("&About"), this);
         aboutAct->setStatusTip(tr("Show the application's About box"));
-        connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+        connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
     }
 
     void MainWindow::createMenus()
@@ -279,10 +283,10 @@ namespace tresta {
             glWindow = new Window(job);
             glWidget = QWidget::createWindowContainer(glWindow, this);
             setCentralWidget(glWidget);
-            connect(glWindow, SIGNAL(zoomChanged(bool)), this, SLOT(zoomChanged(bool)));
-            connect(glWindow, SIGNAL(panChanged(bool)), this, SLOT(panChanged(bool)));
-            connect(glWindow, SIGNAL(rotateChanged(bool)), this, SLOT(rotateChanged(bool)));
-            connect(glWindow, SIGNAL(demoChanged(bool)), this, SLOT(demoChanged(bool)));
+            connect(glWindow, &Window::zoomChanged, this, &MainWindow::zoomChanged);
+            connect(glWindow, &Window::panChanged, this, &MainWindow::panChanged);
+            connect(glWindow, &Window::rotateChanged, this, &MainWindow::rotateChanged);
+            connect(glWindow, &Window::demoChanged, this, &MainWindow::demoChanged);
         }
         catch (std::exception &e) {
             std::cerr << "error: " << e.what() << std::endl;

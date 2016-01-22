@@ -57,11 +57,11 @@ namespace tresta {
         setTitle("tresta");
         setIcon(QIcon(":/assets/logo_64x64.png"));
 
-        connect(this, SIGNAL(widthChanged(int)), this, SLOT(resizeGl()));
-        connect(this, SIGNAL(heightChanged(int)), this, SLOT(resizeGl()));
+        connect(this, &Window::widthChanged, this, &Window::resizeGl);
+        connect(this, &Window::heightChanged, this, &Window::resizeGl);
 
         QTimer *timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(updateScene()));
+        connect(timer, &QTimer::timeout, this, &Window::updateScene);
         timer->start(16);
     }
 

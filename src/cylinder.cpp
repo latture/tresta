@@ -1,5 +1,4 @@
 #include "cylinder.h"
-#include <cmath>
 #include "glassert.h"
 
 namespace tresta {
@@ -58,7 +57,6 @@ namespace tresta {
         {
             for (unsigned int j = 0; j < sectors - 1; ++j)
             {
-
                 indices[2 * dims * idx]     = i * sectors + j;
                 indices[2 * dims * idx + 1] = (i + 1) * sectors + j + 1;
                 indices[2 * dims * idx + 2] = i * sectors + j + 1;

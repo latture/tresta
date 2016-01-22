@@ -2,6 +2,7 @@
 #define TRESTA_TRUSS_SCENE
 
 #include <QMatrix4x4>
+#include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
 #include <QVector3D>
 
@@ -11,19 +12,31 @@
 #include "cylinder.h"
 #include "sphere.h"
 
-class QOpenGLFunctions;
-
 namespace tresta {
 
-    class TrussScene : public AbstractScene
-    {
+    class TrussScene : public QObject, public AbstractScene
+            {
+    Q_OBJECT
+    public slots:
+        /**
+         * Sets the vertex buffer object containing the mesh's original color to the current original color
+         * specified by the color dialog.
+         */
+        void updateOrigColorBuffer();
+
+        /**
+         * Sets the vertex buffer object containing the mesh's deformed color to the current deformed color
+         * specified by the color dialog.
+         */
+        void updateDefColorBuffer();
+
     public:
         /**
          * @brief Constructor
          * @details Builds the vertices for the original and deformed positions
          * as well as the camera position based on the input Job.
          */
-        TrussScene(const Job &job);
+        TrussScene(const Job &job, QObject *parent = nullptr);
 
         /**
          * @brief Initializes OpenGL functions, vertex buffers, and rendering properties.
@@ -96,7 +109,7 @@ namespace tresta {
         float getDeformationScale() const;
 
     private:
-        QOpenGLFunctions *mGLFunc;
+        QOpenGLFunctions_3_3_Core *mGLFunc;
 
         QOpenGLShaderProgram mSphereShader;
         QOpenGLShaderProgram mCylinderShader;
@@ -107,6 +120,14 @@ namespace tresta {
         QMatrix4x4 projection;
         std::vector<QMatrix4x4> vertexViewVector;
         std::vector<std::vector<QMatrix4x4>> deformedVertexViewVectors;
+
+        std::vector<QOpenGLBuffer> vertexViewColBuffers;
+        std::vector<QOpenGLBuffer> defVertexViewColBuffers;
+        std::vector<std::string> vertexViewColNames = {"vertexViewCol1", "vertexViewCol2", "vertexViewCol3", "vertexViewCol4"};
+
+        QOpenGLBuffer origColorBuffer;
+        QOpenGLBuffer defColorBuffer;
+        QOpenGLBuffer userColorBuffer;
 
         QVector3D camera_rot;
         QVector3D camera_trans;
@@ -135,8 +156,6 @@ namespace tresta {
         bool displacementsProvided;
 
         void setCamera(float tx, float ty, float tz, float rx, float ry, float rz);
-        void renderCylinder(const QMatrix4x4 &vertexView);
-        void renderSphere(const QMatrix4x4 &vertexView);
 
         QMatrix4x4 buildVertexMatrix(const float angle, const Node &axis, const Node &translation);
         std::vector<QMatrix4x4> buildVertexMatrixVector(const std::vector<Node> &nodes,
@@ -147,11 +166,14 @@ namespace tresta {
         void rebuildNodeStrips();
         void calcCenteringShift();
         void prepareShaders();
+        void createVertexViewBuffers();
+        void createDefVertexViewBuffers();
+        void setColorBuffer(const std::vector<QColor> &colors, QOpenGLBuffer &buffer);
+        void setVertexColor(QOpenGLBuffer &colorBuffer, GLuint divisor);
+        void bindColBuffer(std::vector<QOpenGLBuffer> &colBuffer);
         void prepareVertexBuffers();
         void updateModelMatrices(QOpenGLShaderProgram &shader);
 
-        void updateModelColor(const QColor &color, QOpenGLShaderProgram &shader);
-        void updateVertexMatrix(const QMatrix4x4 &vertexView, QOpenGLShaderProgram &shader);
         void updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader);
         void updateLightPosition(const QVector3D &position, QOpenGLShaderProgram &shader);
 

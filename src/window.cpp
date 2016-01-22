@@ -30,7 +30,7 @@ namespace tresta {
 
     Window::Window(Job &job, QScreen *screen) :
             QWindow(screen),
-            mScene(new TrussScene(job)),
+            mScene(new TrussScene(job, this)),
             demoSaveDirectory(QDir::currentPath()),
             rotatePressed(false),
             keyboardRotate(false),

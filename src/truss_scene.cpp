@@ -1,6 +1,5 @@
 #include "truss_scene.h"
 #include <Eigen/Geometry>
-#include <QOpenGLFunctions>
 #include <QInputDialog>
 #include <QtWidgets/qmessagebox.h>
 #include "glassert.h"
@@ -8,9 +7,13 @@
 
 namespace tresta {
 
-    TrussScene::TrussScene(const Job &_job)
-            : mSphereShader(),
+    TrussScene::TrussScene(const Job &_job, QObject *parent)
+            : QObject(parent),
+              mSphereShader(),
               mCylinderShader(),
+              origColorBuffer(QOpenGLBuffer::VertexBuffer),
+              defColorBuffer(QOpenGLBuffer::VertexBuffer),
+              userColorBuffer(QOpenGLBuffer::VertexBuffer),
               job(_job),
               colorDialog(_job.colors.size() > 0, _job.displacements.size() > 0),
               time(0.0f),
@@ -20,6 +23,9 @@ namespace tresta {
               renderOriginal(true),
               renderDeformed(true),
               displacementsProvided(false) {
+        vertexViewColBuffers.resize(4);
+        defVertexViewColBuffers.resize(4);
+
         if (job.displacements.size() > 0) {
             displacementsProvided = true;
         }
@@ -48,8 +54,18 @@ namespace tresta {
         buildDeformedVertexViewVectors();
     }
 
+    void TrussScene::updateOrigColorBuffer() {
+        std::vector<QColor> colors = {colorDialog.getOrigColor()};
+        setColorBuffer(colors, origColorBuffer);
+    }
+
+    void TrussScene::updateDefColorBuffer() {
+        std::vector<QColor> colors = {colorDialog.getDefColor()};
+        setColorBuffer(colors, defColorBuffer);
+    }
+
     void TrussScene::initialize() {
-        mGLFunc = new QOpenGLFunctions();
+        mGLFunc = new QOpenGLFunctions_3_3_Core();
         mGLFunc->initializeOpenGLFunctions();
         mGLFunc->glEnable(GL_DEPTH_TEST);
         mGLFunc->glEnable(GL_BLEND);
@@ -63,6 +79,9 @@ namespace tresta {
 
         prepareShaders();
         prepareVertexBuffers();
+
+        connect(&colorDialog, &ColorDialog::origColorChanged, this, &TrussScene::updateOrigColorBuffer);
+        connect(&colorDialog, &ColorDialog::defColorChanged, this, &TrussScene::updateDefColorBuffer);
 
         float val = 10.0f * camera_z0;
         QVector3D lightPos(-val, val, -val);
@@ -93,52 +112,40 @@ namespace tresta {
         updateModelMatrices(mCylinderShader);
         cylinder.mVAO.bind();
 
-
         if (renderDeformed) {
-            if (colorDialog.getUseUserColors()) {
-                for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
-                    updateModelColor(job.colors[i], mCylinderShader);
-                    for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
-                        renderCylinder(deformedVertexViewVectors[i][j]);
-                    }
-                }
-            }
-            else {
-                updateModelColor(colorDialog.getDefColor(), mCylinderShader);
-                for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
-                    for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
-                        renderCylinder(deformedVertexViewVectors[i][j]);
-                    }
-                }
-            }
+            bindColBuffer(defVertexViewColBuffers);
+            setVertexColor(defColorBuffer, deformedVertexViewVectors.size()*deformedVertexViewVectors[0].size());
+            mGLFunc->glDrawElementsInstanced(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0, deformedVertexViewVectors.size()*deformedVertexViewVectors[0].size());
         }
 
         if (renderOriginal) {
-            if (colorDialog.getUseUserColors()) {
-                for (size_t i = 0; i < job.elems.size(); ++i) {
-                    updateModelColor(job.colors[i], mCylinderShader);
-                    renderCylinder(vertexViewVector[i]);
-                }
-            }
-            else {
-                updateModelColor(colorDialog.getOrigColor(), mCylinderShader);
-                for (size_t i = 0; i < job.elems.size(); ++i) {
-                    renderCylinder(vertexViewVector[i]);
-                }
-            }
+            bindColBuffer(vertexViewColBuffers);
+            setVertexColor(origColorBuffer, vertexViewVector.size());
+            mGLFunc->glDrawElementsInstanced(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0, vertexViewVector.size());
         }
 
-        // updateModelMatrices(mSphereShader);
-        // updateModelColor(color, mSphereShader);
-        // sphere.mVAO.bind();
-        // QMatrix4x4 vertexView;
-        // for (size_t i = 0; i < job.nodes.size(); ++i) {
-        //     vertexView.setToIdentity();
-        //     vertexView.translate(job.nodes[i].x(), job.nodes[i].y(), -job.nodes[i].z());
-        //     renderSphere(vertexView);
-        // }
-
         glCheckError();
+    }
+
+    void TrussScene::bindColBuffer(std::vector<QOpenGLBuffer> &colBuffer) {
+        for (size_t i = 0; i < colBuffer.size(); ++i) {
+            colBuffer[i].bind();
+            mCylinderShader.setAttributeArray(vertexViewColNames[i].c_str(), GL_FLOAT, 0, 4);
+            mGLFunc->glVertexAttribDivisor(mCylinderShader.attributeLocation(vertexViewColNames[i].c_str()), 1);
+        }
+    }
+
+    void TrussScene::setVertexColor(QOpenGLBuffer &colorBuffer, GLuint divisor) {
+        if (colorDialog.getUseUserColors()) {
+                userColorBuffer.bind();
+                mCylinderShader.setAttributeArray("vertexColor", GL_FLOAT, 0, 4);
+                mGLFunc->glVertexAttribDivisor(mCylinderShader.attributeLocation("vertexColor"), divisor/vertexViewVector.size());
+            }
+            else {
+                colorBuffer.bind();
+                mCylinderShader.setAttributeArray("vertexColor", GL_FLOAT, 0, 4);
+                mGLFunc->glVertexAttribDivisor(mCylinderShader.attributeLocation("vertexColor"), divisor);
+            }
     }
 
     void TrussScene::demo(int frameNumber) {
@@ -168,6 +175,7 @@ namespace tresta {
                                                                         (double) deformation_scale, 1.0e-4, 1.0e8, 4);
                     rebuildNodeStrips();
                     buildDeformedVertexViewVectors();
+                    createDefVertexViewBuffers();
                 }
                 else {
                     QMessageBox::warning(0, QString("Warning"),
@@ -232,15 +240,6 @@ namespace tresta {
         camera_rot[2] = camera_rot_lag[2] = rz;
     }
 
-    void TrussScene::renderCylinder(const QMatrix4x4 &vertexView) {
-        updateVertexMatrix(vertexView, mCylinderShader);
-        mGLFunc->glDrawElements(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0);
-    }
-
-    void TrussScene::renderSphere(const QMatrix4x4 &vertexView) {
-        updateVertexMatrix(vertexView, mSphereShader);
-        mGLFunc->glDrawElements(GL_TRIANGLES, sphere.indices.size(), GL_UNSIGNED_SHORT, 0);
-    }
 
     QMatrix4x4 TrussScene::buildVertexMatrix(const float angle, const Node &axis, const Node &translation) {
         const float c = std::cos(angle);
@@ -372,19 +371,79 @@ namespace tresta {
         shadersInitialized = true;
     }
 
+    void TrussScene::createVertexViewBuffers() {
+        std::vector<float> vertexViewColVector(4*vertexViewVector.size());
+
+        for (size_t k = 0; k < vertexViewColBuffers.size(); ++k) {
+            for (size_t i = 0; i < vertexViewVector.size(); ++i) {
+                for (size_t j = 0; j < 4; ++j) {
+                    vertexViewColVector[4*i + j] = vertexViewVector[i](j, k);
+                }
+            }
+            vertexViewColBuffers[k].create();
+            vertexViewColBuffers[k].setUsagePattern(QOpenGLBuffer::StaticDraw);
+            vertexViewColBuffers[k].bind();
+            vertexViewColBuffers[k].allocate(&vertexViewColVector[0], vertexViewColVector.size() * sizeof(float));
+        }
+    }
+
+    void TrussScene::createDefVertexViewBuffers() {
+        std::vector<float> defVertexViewColVector;
+        defVertexViewColVector.reserve(4*deformedVertexViewVectors.size()*deformedVertexViewVectors[0].size());
+
+        for (auto col = 0; col < 4; ++col) {
+            for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
+                for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
+                    for (auto row = 0; row < 4; ++row) {
+                        defVertexViewColVector.push_back(deformedVertexViewVectors[i][j](row, col));
+                    }
+                }
+            }
+            if (!defVertexViewColBuffers[col].isCreated()) {
+                defVertexViewColBuffers[col].create();
+                defVertexViewColBuffers[col].setUsagePattern(QOpenGLBuffer::DynamicDraw);
+            }
+            defVertexViewColBuffers[col].bind();
+            defVertexViewColBuffers[col].allocate(&defVertexViewColVector[0], defVertexViewColVector.size() * sizeof(float));
+            defVertexViewColVector.clear();
+        }
+
+    }
+
+    void TrussScene::setColorBuffer(const std::vector<QColor> &colors, QOpenGLBuffer &buffer) {
+        std::vector<float> colorVector(4 * vertexViewVector.size());
+
+        for (size_t i = 0; i < colors.size(); ++i) {
+            colorVector[4 * i + 0] = colors[i].redF();
+            colorVector[4 * i + 1] = colors[i].greenF();
+            colorVector[4 * i + 2] = colors[i].blueF();
+            colorVector[4 * i + 3] = colors[i].alphaF();
+        }
+
+        if (!buffer.isCreated()) {
+            buffer.create();
+            buffer.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+        }
+
+        buffer.bind();
+        buffer.allocate(&colorVector[0], colorVector.size() * sizeof(float));
+    }
+
     void TrussScene::prepareVertexBuffers() {
-        sphere.prepareVertexBuffers();
 
-        sphere.mVAO.bind();
-        mSphereShader.bind();
+        createVertexViewBuffers();
+        createDefVertexViewBuffers();
 
-        sphere.mVertexPositionBuffer.bind();
-        mSphereShader.enableAttributeArray("vertexPosition");
-        mSphereShader.setAttributeBuffer("vertexPosition", GL_FLOAT, 0, 3);
+        std::vector<QColor> origColorVec = {colorDialog.getOrigColor()};
+        setColorBuffer(origColorVec, origColorBuffer);
 
-        sphere.mVertexNormalBuffer.bind();
-        mSphereShader.enableAttributeArray("vertexNormal");
-        mSphereShader.setAttributeBuffer("vertexNormal", GL_FLOAT, 0, 3);
+        std::vector<QColor> defColorVec = {colorDialog.getDefColor()};
+        setColorBuffer(defColorVec, defColorBuffer);
+
+        // if user colors provided, create buffer and set data
+        if (job.colors.size() > 0) {
+            setColorBuffer(job.colors, userColorBuffer);
+        }
 
         cylinder.prepareVertexBuffers();
 
@@ -399,6 +458,11 @@ namespace tresta {
         mCylinderShader.enableAttributeArray("vertexNormal");
         mCylinderShader.setAttributeBuffer("vertexNormal", GL_FLOAT, 0, 3);
 
+        for (size_t i = 0; i < vertexViewColNames.size(); ++i) {
+            mCylinderShader.enableAttributeArray(vertexViewColNames[i].c_str());
+        }
+
+        mCylinderShader.enableAttributeArray("vertexColor");
         cylinder.mVAO.release();
         glCheckError();
     }
@@ -410,20 +474,6 @@ namespace tresta {
         shader.setUniformValue("modelview", modelview);
         shader.setUniformValue("modelview_inv", modelview.inverted());
         shader.setUniformValue("modelnormal", modelnormal);
-    }
-
-    void TrussScene::updateModelColor(const QColor &color, QOpenGLShaderProgram &shader) {
-        assert(shadersInitialized);
-
-        shader.bind();
-        shader.setUniformValue("vertexColor", color);
-    }
-
-    void TrussScene::updateVertexMatrix(const QMatrix4x4 &vertexView, QOpenGLShaderProgram &shader) {
-        assert(shadersInitialized);
-
-        shader.bind();
-        shader.setUniformValue("vertexView", vertexView);
     }
 
     void TrussScene::updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader) {

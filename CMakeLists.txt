@@ -39,6 +39,7 @@ set(tresta_headers ${TRESTA_INCLUDE}/abstract_scene.h
         ${TRESTA_INCLUDE}/containers.h
         ${TRESTA_INCLUDE}/csv_parser.h
         ${TRESTA_INCLUDE}/cylinder.h
+        ${TRESTA_INCLUDE}/demo_dialog.h
         ${TRESTA_INCLUDE}/glassert.h
         ${TRESTA_INCLUDE}/mainwindow.h
         ${TRESTA_INCLUDE}/setup.h
@@ -47,7 +48,8 @@ set(tresta_headers ${TRESTA_INCLUDE}/abstract_scene.h
         ${TRESTA_INCLUDE}/window.h)
 
 set(tresta_sources ${TRESTA_SRC}/color_dialog.cpp
-        ${TRESTA_SRC}/cylinder.cpp
+                   ${TRESTA_SRC}/cylinder.cpp
+                   ${TRESTA_SRC}/demo_dialog.cpp
                    ${TRESTA_SRC}/setup.cpp
                    ${TRESTA_SRC}/sphere.cpp
                    ${TRESTA_SRC}/truss_scene.cpp

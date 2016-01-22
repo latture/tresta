@@ -13,6 +13,10 @@ namespace tresta {
     class ColorDialog : public QDialog {
     Q_OBJECT
 
+    signals:
+        void origColorChanged();
+        void defColorChanged();
+
     public slots:
         /**
          * Prompts user to pick the color for the undeformed mesh.

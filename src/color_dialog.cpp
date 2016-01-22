@@ -44,10 +44,12 @@ namespace tresta {
 
     void ColorDialog::pickOrigColor() {
         origColor = QColorDialog::getColor(origColor, this, "Choose Original Color", QColorDialog::ShowAlphaChannel);
+        emit origColorChanged();
     }
 
     void ColorDialog::pickDefColor() {
         defColor = QColorDialog::getColor(defColor, this, "Choose Deformed Color", QColorDialog::ShowAlphaChannel);
+        emit defColorChanged();
     }
 
     void ColorDialog::setUseUserColors(bool state) {

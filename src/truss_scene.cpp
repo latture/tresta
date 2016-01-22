@@ -24,10 +24,10 @@ namespace tresta {
               renderDeformed(true),
               displacementsProvided(false) {
         vertexViewColBuffers.resize(4);
-        defVertexViewColBuffers.resize(4);
 
         if (job.displacements.size() > 0) {
             displacementsProvided = true;
+            defVertexViewColBuffers.resize(4);
         }
         else {
             renderDeformed = false;
@@ -432,13 +432,14 @@ namespace tresta {
     void TrussScene::prepareVertexBuffers() {
 
         createVertexViewBuffers();
-        createDefVertexViewBuffers();
-
         std::vector<QColor> origColorVec = {colorDialog.getOrigColor()};
         setColorBuffer(origColorVec, origColorBuffer);
 
-        std::vector<QColor> defColorVec = {colorDialog.getDefColor()};
-        setColorBuffer(defColorVec, defColorBuffer);
+        if (displacementsProvided) {
+            createDefVertexViewBuffers();
+            std::vector<QColor> defColorVec = {colorDialog.getDefColor()};
+            setColorBuffer(defColorVec, defColorBuffer);
+        }
 
         // if user colors provided, create buffer and set data
         if (job.colors.size() > 0) {

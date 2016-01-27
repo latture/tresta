@@ -1,4 +1,5 @@
 #include "cylinder.h"
+#include <cmath>
 #include "glassert.h"
 
 namespace tresta {

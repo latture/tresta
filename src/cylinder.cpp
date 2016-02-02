@@ -27,11 +27,10 @@ namespace tresta {
         const float s = 1.0f / ((float) sectors - 1);
 
         float x, y, z;
-        unsigned int idx = 0;
 
-        vertices.resize(rings * sectors * dims);
-        normals.resize(rings * sectors * dims);
-        indices.resize(rings * sectors * 2 * dims);
+        vertices.reserve((rings + 2) * sectors * dims);
+        normals.reserve(rings * sectors * dims);
+        indices.reserve(rings * sectors * 2 * dims);
 
         for (unsigned int i = 0; i < rings; ++i)
         {
@@ -41,32 +40,27 @@ namespace tresta {
                 y = std::sin(2.0f * pi * j * s);
                 z = r * i;
 
-                vertices[dims * idx]     = radius * x;
-                vertices[dims * idx + 1] = z;
-                vertices[dims * idx + 2] = radius * y;
+                vertices.push_back(radius * x);
+                vertices.push_back(z);
+                vertices.push_back(radius * y);
 
-                normals[dims * idx]     = x;
-                normals[dims * idx + 1] = z;
-                normals[dims * idx + 2] = y;
-
-                ++idx;
+                normals.push_back(x);
+                normals.push_back(z);
+                normals.push_back(y);
             }
         }
 
-        idx = 0;
         for (unsigned int i = 0; i < rings - 1; ++i)
         {
             for (unsigned int j = 0; j < sectors - 1; ++j)
             {
-                indices[2 * dims * idx]     = i * sectors + j;
-                indices[2 * dims * idx + 1] = (i + 1) * sectors + j + 1;
-                indices[2 * dims * idx + 2] = i * sectors + j + 1;
+                indices.push_back(i * sectors + j);
+                indices.push_back((i + 1) * sectors + j + 1);
+                indices.push_back(i * sectors + j + 1);
 
-                indices[2 * dims * idx + 3] = i * sectors + j;
-                indices[2 * dims * idx + 4] = (i + 1) * sectors + j;
-                indices[2 * dims * idx + 5] = (i + 1) * sectors + j + 1;
-
-                ++idx;
+                indices.push_back(i * sectors + j);
+                indices.push_back((i + 1) * sectors + j);
+                indices.push_back((i + 1) * sectors + j + 1);
             }
         }
 

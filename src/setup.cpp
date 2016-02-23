@@ -338,7 +338,7 @@ namespace tresta {
             if (colors.size() > 0 && elems.size() != colors.size()) {
                 throw std::runtime_error(
                         (boost::format("Number of rows in colors (%d) do not match the number number of elements (%d).")
-                         % colors.size() % nodes.size()).str()
+                         % colors.size() % elems.size()).str()
                 );
             }
 

@@ -282,7 +282,7 @@ namespace tresta {
                 Node axis;
                 axis << 0.0f, 0.0f, 1.0f;
                 if (dn.y() < 0.0f) {
-                    current_matrix = buildVertexMatrix(180.0f, z_axis, node1 - global_centering_shift);
+                    current_matrix = buildVertexMatrix(3.14159265358979323846f, z_axis, node1 - global_centering_shift);
                 }
                 else {
                     current_matrix = buildVertexMatrix(0.0f, z_axis, node1 - global_centering_shift);

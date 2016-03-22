@@ -147,25 +147,23 @@ namespace tresta {
 
         std::vector<Elem> elems_out(elems_vec.size());
         Props p;
+        size_t nx_idx, ny_idx, nz_idx;
         for(size_t i = 0; i < elems_vec.size(); ++i) {
             if (elems_vec[i].size() != 2) {
                 throw std::runtime_error(
                         (boost::format("Row %d in elems does not specify 2 nodal indices [nn1,nn2].") % i).str()
                 );
             }
-            if (props_vec[i].size() != 7) {
-                std::cerr << "Row " << i << " in props does not specify the 7 property values "
-                        "[EA, EIz, EIy, GJ, nx, ny, nz]" << std::endl;
+            if (props_vec[i].size() < 3) {
                 throw std::runtime_error(
-                        (boost::format("Row %d  in props does not specify the 7 property values "
-                                               "[EA, EIz, EIy, GJ, nx, ny, nz]") % i).str()
+                        (boost::format("Row %d in props does not specify at least 3 property values "
+                                               "[..., nx, ny, nz]") % i).str()
                 );
             }
-            p.EA = props_vec[i][0];
-            p.EIz = props_vec[i][1];
-            p.EIy = props_vec[i][2];
-            p.GJ = props_vec[i][3];
-            p.normal_vec <<  props_vec[i][4],  props_vec[i][5],  props_vec[i][6];
+            nx_idx = props_vec[i].size() - 3;
+            ny_idx = props_vec[i].size() - 2;
+            nz_idx = props_vec[i].size() - 1;
+            p.normal_vec <<  props_vec[i][nx_idx],  props_vec[i][ny_idx],  props_vec[i][nz_idx];
             elems_out[i] = Elem(elems_vec[i][0], elems_vec[i][1], p);
         }
         return elems_out;

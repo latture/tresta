@@ -3,6 +3,7 @@
 
 #include <Eigen/Core>
 #include <QColor>
+#include <vector>
 
 namespace tresta {
 
@@ -31,41 +32,31 @@ namespace tresta {
 
     /**
      * @brief The set of properties associated with an element.
-     * @details The properties must define the extensional stiffness, \f$EA\f$, bending stiffness parallel to the
-     * local z-axis \f$EI_{z}\f$, bending stiffness parallel to the local y-axis\f$EI_{y}\f$, the torsional stiffness,
-     * \f$GJ\f$, and a vector pointing along the beam elements local y-axis.
+     * @details The properties must define a vector pointing along the beam elements local y-axis.
      *
      * @code
-     * float EA = 1000.0;
-     * float EIz = 100.0;
-     * float EIy = 100.0;
-     * float GJ = 200.0;
-     * std::vector<float> normal_vec = {0.0, 0.0, 1.0};
-     * fea::Props props(EA, EIz, EIy, GJ, normal_vec);
+     * float nx = 1000.0;
+     * float ny = 100.0;
+     * float nz = 100.0;
+     * fea::Props props(nx, ny, nz);
      * @endcode
      */
     struct Props {
-        float EA;/**<Extensional stiffness.*/
-        float EIz;/**<Bending stiffness parallel to local z-axis.*/
-        float EIy;/**<Bending stiffness parallel to local y-axis.*/
-        float GJ;/**<Torsional stiffness.*/
         Eigen::Vector3f normal_vec;/**<Vector normal to element (size==3). Direction should be parallel to the beam element's local y-axis.*/
 
-        Props() : EA(0), EIz(0), EIy(0), GJ(0) { };/**<Default constuctor*/
+        Props() { };/**<Default constuctor*/
 
         /**
          * @brief Constructor
          * @details Allows properties to be set upon initialization.
          *
-         * @param[in] EA float. Extensional stiffness.
-         * @param[in] EIz float. Bending stiffness parallel to z-axis.
-         * @param[in] EIy float. Bending stiffness parallel to y-axis.
-         * @param[in] GJ float. Torsional stiffness.
-         * @param[in] normal_vec std::vector<float>. Vector normal to element (`normal_vec.size()==3`). Direction should be parallel to the beam element's local y-axis.
+         * @param[in] nx float. x-component of vector parallel to the beam's local y-axis.
+         * @param[in] ny float. y-component of vector parallel to the beam's local y-axis.
+         * @param[in] nz float. z-component of vector parallel to the beam's local y-axis.
          */
-        Props(float _EA, float _EIz, float _EIy, float _GJ, const std::vector<float> &_normal_vec)
-                : EA(_EA), EIz(_EIz), EIy(_EIy), GJ(_GJ) {
-            normal_vec << _normal_vec[0], _normal_vec[1], _normal_vec[2];
+        Props(float nx, float ny, float nz) {
+            normal_vec << nx, ny, nz;
+            normal_vec.normalize();
         };
     };
 

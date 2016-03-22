@@ -35,9 +35,9 @@ namespace tresta {
      * @details The properties must define a vector pointing along the beam elements local y-axis.
      *
      * @code
-     * float nx = 1000.0;
-     * float ny = 100.0;
-     * float nz = 100.0;
+     * float nx = 1.0;
+     * float ny = 0.0;
+     * float nz = 0.0;
      * fea::Props props(nx, ny, nz);
      * @endcode
      */

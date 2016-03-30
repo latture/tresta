@@ -72,25 +72,21 @@ The format of the element CSV file should be:
     elN_node_num_1,elN_node_num_2
 
 ### Properties ###
-Elemental properties are the most complicated of the four possible JSON keys.
-Each row must have 7 floating point values in the form:
+Each row in the elemental properties file must have at least 3 values specifying a normal vector parallel to the beam's local y-axis.
+If there are more entries in each row the parser discards that information and takes the last 3 entries in each row as `[nx, ny, nz]` components.
+floating point values in the form:
 
-    el1_EA,el1_EIz,el1_EIy,el1_GJ,el1_nvec_x_comp,el1_nvec_y_comp,el1_nvec_z_comp
-    el2_EA,el2_EIz,el2_EIy,el2_GJ,el2_nvec_x_comp,el2_nvec_y_comp,el2_nvec_z_comp
+    ...,el1_nvec_x_comp,el1_nvec_y_comp,el1_nvec_z_comp
+    ...,el2_nvec_x_comp,el2_nvec_y_comp,el2_nvec_z_comp
     ...
     ...
     ...
-    elN_EA,elN_EIz,elN_EIy,elN_GJ,elN_nvec_x_comp,elN_nvec_y_comp,elN_nvec_z_comp
+    ...,elN_nvec_x_comp,elN_nvec_y_comp,elN_nvec_z_comp
 
-`el1_EA` is the extensional stiffness of the first element, `el1_EIz` is the bending
-stiffness about the z-axis, `el1_EIy` is the bending stiffness about the y-axis,
-`el1_GJ` is the torsional stiffness, `el1_nvec_x_comp` is the x-component of element's
-normal vector, `el1_nvec_y_comp` is the y-component of element's
+where `el1_nvec_y_comp` is the y-component of element's
 normal vector, and `el1_nvec_z_comp` is the z-component of element's
 normal vector. The normal vector is defined as vector of unit length pointing
-along the beam's y-axis. Though it is complicated, in general a mesh generation
-tool should be writing this file for you. If not, contact me, and we can figure
-out how we could set a tool to write this file in an automated fashion.
+along the beam's y-axis.
 
 ### Colors ###
 Explicitly setting the colors is optional. 

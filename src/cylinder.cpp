@@ -5,12 +5,7 @@
 namespace tresta {
 
     Cylinder::Cylinder() :
-        vertices(0),
-        normals(0),
-        indices(0),
-        mVertexPositionBuffer(QOpenGLBuffer::VertexBuffer),
-        mVertexNormalBuffer(QOpenGLBuffer::VertexBuffer),
-        mIndexBuffer(QOpenGLBuffer::IndexBuffer),
+        Shape(),
         radius(0.05),
         dims(3)
     {
@@ -120,28 +115,6 @@ namespace tresta {
              indices.push_back(rings * sectors + sectors + 3 + i);
 
          }
-    }
-
-    void Cylinder::prepareVertexBuffers() {
-        mVAO.create();
-        mVAO.bind();
-
-        mVertexPositionBuffer.create();
-        mVertexPositionBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-        mVertexPositionBuffer.bind();
-        mVertexPositionBuffer.allocate(&vertices[0], vertices.size() * sizeof(float));
-
-        mVertexNormalBuffer.create();
-        mVertexNormalBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-        mVertexNormalBuffer.bind();
-        mVertexNormalBuffer.allocate(&normals[0], normals.size() * sizeof(float));
-
-        mIndexBuffer.create();
-        mIndexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-        mIndexBuffer.bind();
-        mIndexBuffer.allocate(&indices[0], indices.size() * sizeof(short));
-
-        mVAO.release();
     }
 
 } // namespace tresta

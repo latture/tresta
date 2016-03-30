@@ -5,13 +5,7 @@
 namespace tresta {
 
     Sphere::Sphere() :
-            vertices(0),
-            normals(0),
-            offsets(0),
-            indices(0),
-            mVertexPositionBuffer(QOpenGLBuffer::VertexBuffer),
-            mVertexNormalBuffer(QOpenGLBuffer::VertexBuffer),
-            mIndexBuffer(QOpenGLBuffer::IndexBuffer),
+            Shape(),
             radius(0.05),
             dims(3) {
     }
@@ -69,28 +63,6 @@ namespace tresta {
         // reorder vertices and normals to be CCW for correct back face culling when rendered
         std::reverse(vertices.begin(), vertices.end());
         std::reverse(normals.begin(), normals.end());
-    }
-
-    void Sphere::prepareVertexBuffers() {
-        mVAO.create();
-        mVAO.bind();
-
-        mVertexPositionBuffer.create();
-        mVertexPositionBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-        mVertexPositionBuffer.bind();
-        mVertexPositionBuffer.allocate(&vertices[0], vertices.size() * sizeof(float));
-
-        mVertexNormalBuffer.create();
-        mVertexNormalBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-        mVertexNormalBuffer.bind();
-        mVertexNormalBuffer.allocate(&normals[0], normals.size() * sizeof(float));
-
-        mIndexBuffer.create();
-        mIndexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-        mIndexBuffer.bind();
-        mIndexBuffer.allocate(&indices[0], indices.size() * sizeof(short));
-
-        mVAO.release();
     }
 
 } // namespace tresta

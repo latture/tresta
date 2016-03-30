@@ -1,29 +1,16 @@
 #ifndef TRESTA_CYLINDER_H
 #define TRESTA_CYLINDER_H
 
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
-
-#include <vector>
+#include "shape.h"
 
 namespace tresta {
 
-    class Cylinder
+    class Cylinder : public Shape
     {
     public:
         Cylinder();
 
         void initialize();
-        void prepareVertexBuffers();
-
-        std::vector<float> vertices;
-        std::vector<float> normals;
-        std::vector<unsigned short> indices;
-
-        QOpenGLVertexArrayObject mVAO;
-        QOpenGLBuffer mVertexPositionBuffer;
-        QOpenGLBuffer mVertexNormalBuffer;
-        QOpenGLBuffer mIndexBuffer;
 
     private:
         const float radius;

@@ -30,6 +30,7 @@ add_library(boostlib ${EXT_BOOST_ROOT}/libs/smart_ptr/src/sp_collector.cpp
                      ${EXT_BOOST_ROOT}/libs/smart_ptr/src/sp_debug_hooks.cpp)
 
 find_package(Qt5Core REQUIRED)
+find_package(Qt5Concurrent REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -42,7 +43,9 @@ set(tresta_headers ${TRESTA_INCLUDE}/abstract_scene.h
         ${TRESTA_INCLUDE}/demo_dialog.h
         ${TRESTA_INCLUDE}/glassert.h
         ${TRESTA_INCLUDE}/mainwindow.h
+        ${TRESTA_INCLUDE}/ply_exporter.h
         ${TRESTA_INCLUDE}/setup.h
+        ${TRESTA_INCLUDE}/shape.h
         ${TRESTA_INCLUDE}/sphere.h
         ${TRESTA_INCLUDE}/truss_scene.h
         ${TRESTA_INCLUDE}/window.h)
@@ -50,10 +53,12 @@ set(tresta_headers ${TRESTA_INCLUDE}/abstract_scene.h
 set(tresta_sources ${TRESTA_SRC}/color_dialog.cpp
                    ${TRESTA_SRC}/cylinder.cpp
                    ${TRESTA_SRC}/demo_dialog.cpp
+                   ${TRESTA_SRC}/mainwindow.cpp
+                   ${TRESTA_SRC}/ply_exporter.cpp
                    ${TRESTA_SRC}/setup.cpp
+                   ${TRESTA_SRC}/shape.cpp
                    ${TRESTA_SRC}/sphere.cpp
                    ${TRESTA_SRC}/truss_scene.cpp
-                   ${TRESTA_SRC}/window.cpp
-                   ${TRESTA_SRC}/mainwindow.cpp)
+                   ${TRESTA_SRC}/window.cpp)
 
 add_subdirectory(src)

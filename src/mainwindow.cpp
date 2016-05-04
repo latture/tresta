@@ -77,6 +77,10 @@ namespace tresta {
         sendKey(Qt::Key_F);
     }
 
+    void MainWindow::exportPressed() {
+        sendKey(Qt::Key_E);
+    }
+
     void MainWindow::zoomChanged(bool isEnabled) {
         zoomButton->setChecked(isEnabled);
     }
@@ -113,6 +117,7 @@ namespace tresta {
                                  "Key S:\tscale deformation\r\n"
                                  "Key C:\tchoose colors\r\n"
                                  "Key F:\ttoggle demo mode\r\n"
+                                 "Key E:\tExport current mesh to PLY file\r\n"
        );
         QMessageBox::about(this, tr("About Tresta"), aboutText);
     }
@@ -165,9 +170,13 @@ namespace tresta {
         rotateAct->setStatusTip(tr("Rotate camera"));
         connect(rotateAct, &QAction::triggered, this, &MainWindow::rotatePressed);
 
-        demoAct = new QAction(QIcon(":/assets/camera_32x32.png"), tr("&Enter demo mode and save frames"), this);
+        demoAct = new QAction(QIcon(":/assets/camera_32x32.png"), tr("Enter &demo mode and save frames"), this);
         demoAct->setStatusTip(tr("Enter demo mode"));
         connect(demoAct, &QAction::triggered, this, &MainWindow::demoPressed);
+
+        exportAct = new QAction(QIcon(":/assets/export.png"), tr("&Export current mesh to PLY file"), this);
+        exportAct->setStatusTip(tr("Export current mesh"));
+        connect(exportAct, &QAction::triggered, this, &MainWindow::exportPressed);
 
         exitAct = new QAction(QIcon(":/assets/window-close.png"), tr("E&xit"), this);
         exitAct->setShortcuts(QKeySequence::Quit);
@@ -197,6 +206,7 @@ namespace tresta {
         editMenu->addAction(setScaleAct);
         editMenu->addAction(setColorAct);
         editMenu->addAction(demoAct);
+        editMenu->addAction(exportAct);
 
         menuBar()->addSeparator();
 
@@ -232,6 +242,10 @@ namespace tresta {
         demoButton->setDefaultAction(demoAct);
         demoButton->setCheckable(true);
 
+        exportButton = new QToolButton(this);
+        exportButton->setDefaultAction(exportAct);
+        exportButton->setCheckable(true);
+
         setScaleButton = new QToolButton(this);
         setScaleButton->setDefaultAction(setScaleAct);
 
@@ -252,6 +266,7 @@ namespace tresta {
         toolBar->addWidget(setScaleButton);
         toolBar->addWidget(setColorButton);
         toolBar->addWidget(demoButton);
+        toolBar->addWidget(exportButton);
 
     }
 

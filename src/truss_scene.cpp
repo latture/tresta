@@ -1,7 +1,9 @@
 #include "truss_scene.h"
 #include <Eigen/Geometry>
+#include <QFileDialog>
 #include <QInputDialog>
-#include <QtWidgets/qmessagebox.h>
+#include <QMessageBox>
+#include "ply_exporter.h"
 #include "glassert.h"
 #include "setup.h"
 
@@ -51,7 +53,7 @@ namespace tresta {
 
         vertexViewVector = buildVertexMatrixVector(job.nodes, job.elems, 1.0f, 1.0f);
 
-        buildDeformedVertexViewVectors();
+        buildDeformedVertexViewVector();
     }
 
     void TrussScene::updateOrigColorBuffer() {
@@ -114,8 +116,8 @@ namespace tresta {
 
         if (renderDeformed) {
             bindColBuffer(defVertexViewColBuffers);
-            setVertexColor(defColorBuffer, deformedVertexViewVectors.size()*deformedVertexViewVectors[0].size());
-            mGLFunc->glDrawElementsInstanced(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0, deformedVertexViewVectors.size()*deformedVertexViewVectors[0].size());
+            setVertexColor(defColorBuffer, deformedVertexViewVector.size());
+            mGLFunc->glDrawElementsInstanced(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0, deformedVertexViewVector.size());
         }
 
         if (renderOriginal) {
@@ -174,8 +176,8 @@ namespace tresta {
                     deformation_scale = (float) QInputDialog::getDouble(0, QString("Choose deformation scale"), 0,
                                                                         (double) deformation_scale, 1.0e-4, 1.0e8, 4);
                     rebuildNodeStrips();
-                    buildDeformedVertexViewVectors();
-                    createDefVertexViewBuffers();
+                    buildDeformedVertexViewVector();
+                    createVertexViewBuffers(deformedVertexViewVector, defVertexViewColBuffers);
                 }
                 else {
                     QMessageBox::warning(0, QString("Warning"),
@@ -198,6 +200,15 @@ namespace tresta {
 
             case Qt::Key_C:
                 colorDialog.exec();
+                break;
+
+            case Qt::Key_E:
+                try {
+                    exportJob();
+                }
+                catch (const std::exception &e) {
+                    QMessageBox::warning(0, QString("Warning"), QString(e.what()));
+                }
                 break;
 
             default:
@@ -223,7 +234,7 @@ namespace tresta {
     void TrussScene::setDeformationScale(float scale) {
         deformation_scale = scale;
         rebuildNodeStrips();
-        buildDeformedVertexViewVectors();
+        buildDeformedVertexViewVector();
     }
 
     float TrussScene::getDeformationScale() const {
@@ -301,11 +312,12 @@ namespace tresta {
         return vector_out;
     }
 
-    void TrussScene::buildDeformedVertexViewVectors() {
-        deformedVertexViewVectors.clear();
+    void TrussScene::buildDeformedVertexViewVector() {
+        deformedVertexViewVector.clear();
+        std::vector<QMatrix4x4> strip_matrices;
         if (job.node_strips.size() > 0) {
-            deformedVertexViewVectors.reserve(job.node_strips.size());
             const size_t num_interp_points = job.node_strips[0].size();
+            deformedVertexViewVector.reserve(job.node_strips.size() * num_interp_points);
             std::vector<Elem> def_elems(num_interp_points - 1);
 
             for (size_t i = 0; i < def_elems.size(); ++i) {
@@ -313,9 +325,8 @@ namespace tresta {
             }
 
             for (size_t i = 0; i < job.node_strips.size(); ++i) {
-                deformedVertexViewVectors.push_back(
-                        buildVertexMatrixVector(job.node_strips[i], def_elems, 0.99, 0.99)
-                );
+                strip_matrices = buildVertexMatrixVector(job.node_strips[i], def_elems, 0.99, 0.99);
+                deformedVertexViewVector.insert(std::end(deformedVertexViewVector), std::begin(strip_matrices), std::end(strip_matrices));
             }
         }
     }
@@ -342,6 +353,25 @@ namespace tresta {
         }
         global_centering_shift = global_max_pos - global_min_pos;
         global_centering_shift /= 2.0f;
+    }
+
+    void TrussScene::exportJob() {
+        QString fileName = QFileDialog::getSaveFileName(0, tr("Export the current mesh"),
+                                                        "mesh.ply", tr("PLY (*.ply)"));
+        if (!fileName.isEmpty()) {
+            PlyExporter exporter;
+            exporter.exportPly(fileName, QString("Original mesh"), &cylinder, job, vertexViewVector);
+
+            if (displacementsProvided) {
+                QStringList qsl = fileName.split('.');
+                QString defFileName("");
+                for (int i = 0; i < qsl.size() - 1; ++i)
+                    defFileName += qsl[0];
+                defFileName += QString("_deformed.") + qsl[qsl.size() - 1];
+                std::cout << defFileName.toStdString() << std::endl;
+                exporter.exportPly(defFileName, QString("Deformed mesh"), &cylinder, job, deformedVertexViewVector);
+            }
+        }
     }
 
     void TrussScene::prepareShaders() {
@@ -371,47 +401,26 @@ namespace tresta {
         shadersInitialized = true;
     }
 
-    void TrussScene::createVertexViewBuffers() {
-        std::vector<float> vertexViewColVector(4*vertexViewVector.size());
+    void TrussScene::createVertexViewBuffers(const std::vector<QMatrix4x4>& viewVector, std::vector<QOpenGLBuffer>& viewBuffers) {
+        std::vector<float> viewColVector(4*viewVector.size());
 
-        for (size_t k = 0; k < vertexViewColBuffers.size(); ++k) {
-            for (size_t i = 0; i < vertexViewVector.size(); ++i) {
+        for (size_t k = 0; k < viewBuffers.size(); ++k) {
+            for (size_t i = 0; i < viewVector.size(); ++i) {
                 for (size_t j = 0; j < 4; ++j) {
-                    vertexViewColVector[4*i + j] = vertexViewVector[i](j, k);
+                    viewColVector[4*i + j] = viewVector[i](j, k);
                 }
             }
-            vertexViewColBuffers[k].create();
-            vertexViewColBuffers[k].setUsagePattern(QOpenGLBuffer::StaticDraw);
-            vertexViewColBuffers[k].bind();
-            vertexViewColBuffers[k].allocate(&vertexViewColVector[0], vertexViewColVector.size() * sizeof(float));
-        }
-    }
-
-    void TrussScene::createDefVertexViewBuffers() {
-        std::vector<float> defVertexViewColVector;
-        defVertexViewColVector.reserve(4*deformedVertexViewVectors.size()*deformedVertexViewVectors[0].size());
-
-        for (auto col = 0; col < 4; ++col) {
-            for (size_t i = 0; i < deformedVertexViewVectors.size(); ++i) {
-                for (size_t j = 0; j < deformedVertexViewVectors[i].size(); ++j) {
-                    for (auto row = 0; row < 4; ++row) {
-                        defVertexViewColVector.push_back(deformedVertexViewVectors[i][j](row, col));
-                    }
-                }
+            if (!viewBuffers[k].isCreated()) {
+                viewBuffers[k].create();
+                viewBuffers[k].setUsagePattern(QOpenGLBuffer::StaticDraw);
             }
-            if (!defVertexViewColBuffers[col].isCreated()) {
-                defVertexViewColBuffers[col].create();
-                defVertexViewColBuffers[col].setUsagePattern(QOpenGLBuffer::DynamicDraw);
-            }
-            defVertexViewColBuffers[col].bind();
-            defVertexViewColBuffers[col].allocate(&defVertexViewColVector[0], defVertexViewColVector.size() * sizeof(float));
-            defVertexViewColVector.clear();
+            viewBuffers[k].bind();
+            viewBuffers[k].allocate(&viewColVector[0], viewColVector.size() * sizeof(float));
         }
-
-    }
+    }    
 
     void TrussScene::setColorBuffer(const std::vector<QColor> &colors, QOpenGLBuffer &buffer) {
-        std::vector<float> colorVector(4 * vertexViewVector.size());
+        std::vector<float> colorVector(4 * colors.size());
 
         for (size_t i = 0; i < colors.size(); ++i) {
             colorVector[4 * i + 0] = colors[i].redF();
@@ -431,12 +440,12 @@ namespace tresta {
 
     void TrussScene::prepareVertexBuffers() {
 
-        createVertexViewBuffers();
+        createVertexViewBuffers(vertexViewVector, vertexViewColBuffers);
         std::vector<QColor> origColorVec = {colorDialog.getOrigColor()};
         setColorBuffer(origColorVec, origColorBuffer);
 
         if (displacementsProvided) {
-            createDefVertexViewBuffers();
+            createVertexViewBuffers(deformedVertexViewVector, defVertexViewColBuffers);
             std::vector<QColor> defColorVec = {colorDialog.getDefColor()};
             setColorBuffer(defColorVec, defColorBuffer);
         }

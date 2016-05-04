@@ -119,7 +119,7 @@ namespace tresta {
         QMatrix4x4 modelnormal;
         QMatrix4x4 projection;
         std::vector<QMatrix4x4> vertexViewVector;
-        std::vector<std::vector<QMatrix4x4>> deformedVertexViewVectors;
+        std::vector<QMatrix4x4> deformedVertexViewVector;
 
         std::vector<QOpenGLBuffer> vertexViewColBuffers;
         std::vector<QOpenGLBuffer> defVertexViewColBuffers;
@@ -162,12 +162,12 @@ namespace tresta {
                                                         const std::vector<Elem> &elems,
                                                         float x_scale_multiplier,
                                                         float z_scale_multiplier);
-        void buildDeformedVertexViewVectors();
+        void buildDeformedVertexViewVector();
         void rebuildNodeStrips();
         void calcCenteringShift();
+        void exportJob();
         void prepareShaders();
-        void createVertexViewBuffers();
-        void createDefVertexViewBuffers();
+        void createVertexViewBuffers(const std::vector<QMatrix4x4>& viewVector, std::vector<QOpenGLBuffer>& viewBuffers);
         void setColorBuffer(const std::vector<QColor> &colors, QOpenGLBuffer &buffer);
         void setVertexColor(QOpenGLBuffer &colorBuffer, GLuint divisor);
         void bindColBuffer(std::vector<QOpenGLBuffer> &colBuffer);

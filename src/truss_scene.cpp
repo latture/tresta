@@ -20,7 +20,6 @@ namespace tresta {
               colorDialog(_job.colors.size() > 0, _job.displacements.size() > 0),
               time(0.0f),
               deformation_scale(1.0),
-              alpha_cutoff(0.0),
               camera_inertia(0.1f),
               shadersInitialized(false),
               renderOriginal(true),
@@ -67,12 +66,23 @@ namespace tresta {
         setColorBuffer(colors, defColorBuffer);
     }
 
+    void TrussScene::updateTransparencyEnabled(bool state) {
+        if (state)
+            mGLFunc->glEnable(GL_BLEND);
+        else
+            mGLFunc->glDisable(GL_BLEND);
+    }
+
+    void TrussScene::updateAlphaCutoff(float cutoff) {
+        setAlphaCutoff(cutoff, mCylinderShader);
+    }
+
     void TrussScene::initialize() {
         mGLFunc = new QOpenGLFunctions_3_3_Core();
         mGLFunc->initializeOpenGLFunctions();
         mGLFunc->glEnable(GL_DEPTH_TEST);
-        mGLFunc->glEnable(GL_BLEND);
         mGLFunc->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        updateTransparencyEnabled(colorDialog.getTransparencyEnabled());
 
         float red = 1.0f;
         float green = 1.0f;
@@ -85,6 +95,8 @@ namespace tresta {
 
         connect(&colorDialog, &ColorDialog::origColorChanged, this, &TrussScene::updateOrigColorBuffer);
         connect(&colorDialog, &ColorDialog::defColorChanged, this, &TrussScene::updateDefColorBuffer);
+        connect(&colorDialog, &ColorDialog::transparencyEnabledChanged, this, &TrussScene::updateTransparencyEnabled);
+        connect(&colorDialog, &ColorDialog::alphaCutoffChanged, this, &TrussScene::updateAlphaCutoff);
     }
 
     void TrussScene::update(float t) {
@@ -205,11 +217,6 @@ namespace tresta {
                 catch (const std::exception &e) {
                     QMessageBox::warning(0, QString("Warning"), QString(e.what()));
                 }
-                break;
-
-            case Qt::Key_A:
-                alpha_cutoff = (float) QInputDialog::getDouble(0, "Input alpha cutoff", "alpha", alpha_cutoff, 0.0, 1.0, 6);
-                updateAlphaCutoff(mCylinderShader);
                 break;
 
             default:
@@ -496,11 +503,11 @@ namespace tresta {
         shader.setUniformValue("projection", projection);
     }
 
-    void TrussScene::updateAlphaCutoff(QOpenGLShaderProgram &shader) {
+    void TrussScene::setAlphaCutoff(float cutoff, QOpenGLShaderProgram &shader) {
         assert(shadersInitialized);
 
         shader.bind();
-        shader.setUniformValue("alphaCutoff", alpha_cutoff);
+        shader.setUniformValue("alphaCutoff", cutoff);
     }
 
 } // namespace tresta

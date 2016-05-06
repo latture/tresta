@@ -33,7 +33,6 @@ namespace tresta {
         void demoPressed();
         void exportPressed();
         void setColorPressed();
-        void alphaCutoffPressed();
 
         void zoomChanged(bool isEnabled);
         void panChanged(bool isEnabled);
@@ -71,7 +70,6 @@ namespace tresta {
         QToolButton *demoButton;
         QToolButton *exportButton;
         QToolButton *setColorButton;
-        QToolButton *alphaCutoffButton;
         QAction *openAct;
         QAction *plotDeformedAct;
         QAction *plotOriginalAct;
@@ -82,7 +80,6 @@ namespace tresta {
         QAction *demoAct;
         QAction *exportAct;
         QAction *setColorAct;
-        QAction *alphaCutoffAct;
         QAction *exitAct;
         QAction *aboutAct;
     };

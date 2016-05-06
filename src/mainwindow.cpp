@@ -81,10 +81,6 @@ namespace tresta {
         sendKey(Qt::Key_C);
     }
 
-    void MainWindow::alphaCutoffPressed() {
-        sendKey(Qt::Key_A);
-    }
-
     void MainWindow::zoomChanged(bool isEnabled) {
         zoomButton->setChecked(isEnabled);
     }
@@ -122,7 +118,6 @@ namespace tresta {
                                  "Key C:\tchoose colors\r\n"
                                  "Key F:\ttoggle demo mode\r\n"
                                  "Key E:\tExport current mesh to PLY file\r\n"
-                                 "Key A:\tSet cutoff threshold for alpha values\r\n"
        );
         QMessageBox::about(this, tr("About Tresta"), aboutText);
     }
@@ -183,10 +178,6 @@ namespace tresta {
         setColorAct->setStatusTip(tr("Choose colors for current scene"));
         connect(setColorAct, &QAction::triggered, this, &MainWindow::setColorPressed);
 
-        alphaCutoffAct = new QAction(QIcon(":/assets/alpha-cutoff_32x32.png"), tr("&Set alpha cutoff threshold"), this);
-        alphaCutoffAct->setStatusTip(tr("Set alpha cutoff threshold"));
-        connect(alphaCutoffAct, &QAction::triggered, this, &MainWindow::alphaCutoffPressed);
-
         exitAct = new QAction(QIcon(":/assets/window-close.png"), tr("E&xit"), this);
         exitAct->setShortcuts(QKeySequence::Quit);
         exitAct->setStatusTip(tr("Exit the application"));
@@ -216,7 +207,6 @@ namespace tresta {
         editMenu->addAction(demoAct);
         editMenu->addAction(exportAct);
         editMenu->addAction(setColorAct);
-        editMenu->addAction(alphaCutoffAct);
 
         menuBar()->addSeparator();
 
@@ -256,10 +246,6 @@ namespace tresta {
         exportButton->setDefaultAction(exportAct);
         exportButton->setCheckable(true);
 
-        alphaCutoffButton = new QToolButton(this);
-        alphaCutoffButton->setDefaultAction(alphaCutoffAct);
-        alphaCutoffButton->setCheckable(true);
-
         setScaleButton = new QToolButton(this);
         setScaleButton->setDefaultAction(setScaleAct);
 
@@ -281,7 +267,6 @@ namespace tresta {
         toolBar->addWidget(demoButton);
         toolBar->addWidget(exportButton);
         toolBar->addWidget(setColorButton);
-        toolBar->addWidget(alphaCutoffButton);
     }
 
     void MainWindow::createStatusBar()

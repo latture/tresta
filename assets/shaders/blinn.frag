@@ -59,7 +59,7 @@ bool equal(float a, float b, float tolerance) {
 }
 
 void main() {
-    if (vColor.w < alphaCutoff)
+    if (lessThan(vColor.w, alphaCutoff, tolerance))
         discard;
 
     Material material = Material(
@@ -114,5 +114,5 @@ void main() {
         totalLighting += diffuseReflection + specularReflection;
     }
 
-    color = vec4(totalLighting, 1.0);
+    color = vec4(totalLighting, vColor.w);
 }

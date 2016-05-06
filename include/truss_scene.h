@@ -30,6 +30,10 @@ namespace tresta {
          */
         void updateDefColorBuffer();
 
+        void updateTransparencyEnabled(bool);
+
+        void updateAlphaCutoff(float);
+
     public:
         /**
          * @brief Constructor
@@ -149,7 +153,6 @@ namespace tresta {
         float time;
         float camera_z0;
         float deformation_scale;
-        float alpha_cutoff;
         const float camera_inertia;
         bool shadersInitialized;
         bool renderOriginal;
@@ -176,7 +179,7 @@ namespace tresta {
         void updateModelMatrices(QOpenGLShaderProgram &shader);
 
         void updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader);
-        void updateAlphaCutoff(QOpenGLShaderProgram &shader);
+        void setAlphaCutoff(float cutoff, QOpenGLShaderProgram &shader);
 
     };
 

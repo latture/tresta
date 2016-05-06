@@ -5,7 +5,10 @@
 #include <QColor>
 
 class QCheckBox;
+class QDoubleSpinBox;
 class QGroupBox;
+class QHBoxLayout;
+class QLabel;
 class QPushButton;
 
 namespace tresta {
@@ -16,6 +19,8 @@ namespace tresta {
     signals:
         void origColorChanged();
         void defColorChanged();
+        void transparencyEnabledChanged(bool);
+        void alphaCutoffChanged(float);
 
     public slots:
         /**
@@ -34,6 +39,18 @@ namespace tresta {
          */
         void setUseUserColors(bool state);
 
+        /**
+         * Sets whether rendering should allow transparency.
+         * @param transparencyEnabled bool. Whether transparency should be used.
+         */
+        void setTransparencyEnabled(bool state);
+
+        /**
+         * Sets the alpha threshold for discarding fragments in the shader.\
+         * @param cutoff float. Values below this are discarded. Should be on the range `[0, 1]`.
+         */
+        void setAlphaCutoff(double cutoff);
+
     public:
         ColorDialog(bool userColorProvided, bool displacementsProvided, QWidget *parent = 0);
 
@@ -51,9 +68,15 @@ namespace tresta {
 
         /**
          * Gets the bool that determines whether user supplied colors should be used.
-         * @return useUserColors bool. Trus if user colors should be used.
+         * @return useUserColors bool. True if user colors should be used.
          */
         const bool getUseUserColors() const;
+
+        /**
+         * Gets the bool that determines whether rendering should allow transparency.
+         * @return transparencyEnabled bool. True if transparency should be used.
+         */
+        const bool getTransparencyEnabled() const;
 
         /**
          * Sets the alpha channel value for the color stored for the undeformed mesh.
@@ -79,20 +102,31 @@ namespace tresta {
         void createCheckBox(bool userColorsProvided);
 
         /**
+         * Creates the spin box layout used to set the alpha cutoff threshold label and spin box.
+         */
+        void createSpinBoxLayout();
+
+        /**
          * Creates the button used to close the dialog.
          */
         void createCloseButton();
 
         bool useUserColors;/**<Whether to use custom defined elemental colors instead of single colors chosen for each mesh.*/
+        bool transparencyEnabled;/**<Whether transparency is enabled.*/
+        float alphaCutoff;/**<If transparency is enabled, alpha values below this value will be discarded by the shader.*/
 
         QColor origColor;/**<Color of the undeformed mesh.*/
         QColor defColor;/**<Color of the deformed mesh.*/
 
         QCheckBox *useUserColorsCheckBox;/**<When checked user defined elemental colors should replace single colors chosen for each mesh.*/
+        QCheckBox *transparencyEnabledCheckBox;/**<When checked the mesh will be drawn with transparency enabled.*/
         QGroupBox *chooseGroupBox;/**<Holds buttons used to prompt the user to choose colors for the original and deformed meshes.*/
         QPushButton *origColorButton;/**<Button that prompts the user to choose the color of the original mesh.*/
         QPushButton *defColorButton;/**<Button that prompts the user to choose the color of the deformed mesh.*/
         QPushButton *closeButton;/**<Button that closes the dialog.*/
+        QDoubleSpinBox *alphaCutoffSpinBox;/**<Spin box that allows the user to set the alpha cutoff threshold.*/
+        QLabel *alphaCutoffLabel;/**<Label displayed beside the alpha cutoff spinbox*/;
+        QHBoxLayout *alphaCutoffLayout;/**<Layout that holds the alpha cutoff label and spin box*/
     };
 
 } // namespace tresta

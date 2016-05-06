@@ -14,6 +14,5 @@
         <file>assets/gtk-select-color_32x32.png</file>
         <file>assets/default-folder-video_32x32.png</file>
         <file>assets/export.png</file>
-        <file>assets/alpha-cutoff_32x32.png</file>
     </qresource>
 </RCC>

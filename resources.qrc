@@ -12,7 +12,7 @@
         <file>assets/default-document-open.png</file>
         <file>assets/window-close.png</file>
         <file>assets/gtk-select-color_32x32.png</file>
-        <file>assets/camera_32x32.png</file>
+        <file>assets/default-folder-video_32x32.png</file>
         <file>assets/export.png</file>
     </qresource>
 </RCC>

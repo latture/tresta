@@ -170,7 +170,7 @@ namespace tresta {
         rotateAct->setStatusTip(tr("Rotate camera"));
         connect(rotateAct, &QAction::triggered, this, &MainWindow::rotatePressed);
 
-        demoAct = new QAction(QIcon(":/assets/camera_32x32.png"), tr("Enter &demo mode and save frames"), this);
+        demoAct = new QAction(QIcon(":/assets/default-folder-video_32x32.png"), tr("Enter &demo mode and save frames"), this);
         demoAct->setStatusTip(tr("Enter demo mode"));
         connect(demoAct, &QAction::triggered, this, &MainWindow::demoPressed);
 

@@ -11,7 +11,7 @@ uniform mat4 modelview;
 uniform mat4 modelnormal;
 uniform mat4 projection;
 
-out vec3 vPosition;
+out vec4 vPosition;
 out vec3 normalInterp;
 out vec4 vColor;
 
@@ -21,7 +21,7 @@ void main(){
 
     gl_Position = projection * modelview * (vertexView * offsetPos4);
 
-    vPosition = vec3(gl_Position);
+    vPosition = gl_Position;
     normalInterp = vec3(modelnormal * vec4(vertexNormal, 0.0));
     vColor = vertexColor;
 }

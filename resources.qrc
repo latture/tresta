@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/shaders/blinn_phong.frag</file>
-        <file>assets/shaders/blinn_phong.vert</file>
+        <file>assets/shaders/blinn.frag</file>
+        <file>assets/shaders/blinn.vert</file>
         <file>assets/logo_64x64.png</file>
         <file>assets/show-original_32x32.png</file>
         <file>assets/show-deformed_32x32.png</file>
@@ -14,5 +14,6 @@
         <file>assets/gtk-select-color_32x32.png</file>
         <file>assets/default-folder-video_32x32.png</file>
         <file>assets/export.png</file>
+        <file>assets/alpha-cutoff_32x32.png</file>
     </qresource>
 </RCC>

@@ -20,6 +20,7 @@ namespace tresta {
               colorDialog(_job.colors.size() > 0, _job.displacements.size() > 0),
               time(0.0f),
               deformation_scale(1.0),
+              alpha_cutoff(0.0),
               camera_inertia(0.1f),
               shadersInitialized(false),
               renderOriginal(true),
@@ -84,11 +85,6 @@ namespace tresta {
 
         connect(&colorDialog, &ColorDialog::origColorChanged, this, &TrussScene::updateOrigColorBuffer);
         connect(&colorDialog, &ColorDialog::defColorChanged, this, &TrussScene::updateDefColorBuffer);
-
-        float val = 10.0f * camera_z0;
-        QVector3D lightPos(-val, val, -val);
-        updateLightPosition(lightPos, mSphereShader);
-        updateLightPosition(lightPos, mCylinderShader);
     }
 
     void TrussScene::update(float t) {
@@ -209,6 +205,11 @@ namespace tresta {
                 catch (const std::exception &e) {
                     QMessageBox::warning(0, QString("Warning"), QString(e.what()));
                 }
+                break;
+
+            case Qt::Key_A:
+                alpha_cutoff = (float) QInputDialog::getDouble(0, "Input alpha cutoff", "alpha", alpha_cutoff, 0.0, 1.0, 6);
+                updateAlphaCutoff(mCylinderShader);
                 break;
 
             default:
@@ -375,21 +376,21 @@ namespace tresta {
     }
 
     void TrussScene::prepareShaders() {
-        if (!mSphereShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":assets/shaders/blinn_phong.vert")) {
+        if (!mSphereShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":assets/shaders/blinn.vert")) {
             qCritical() << "Error adding sphere vertex shader.";
         }
 
-        if (!mSphereShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":assets/shaders/blinn_phong.frag")) {
+        if (!mSphereShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":assets/shaders/blinn.frag")) {
             qCritical() << "Error adding sphere fragment shader.";
         }
         if (!mSphereShader.link()) {
             qCritical() << "Error linking sphere shader.";
         }
 
-        if (!mCylinderShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":assets/shaders/blinn_phong.vert")) {
+        if (!mCylinderShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":assets/shaders/blinn.vert")) {
             qCritical() << "Error adding cylinder vertex shader.";
         }
-        if (!mCylinderShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":assets/shaders/blinn_phong.frag")) {
+        if (!mCylinderShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":assets/shaders/blinn.frag")) {
             qCritical() << "Error adding cylinder fragment shader.";
         }
         if (!mCylinderShader.link()) {
@@ -495,11 +496,11 @@ namespace tresta {
         shader.setUniformValue("projection", projection);
     }
 
-    void TrussScene::updateLightPosition(const QVector3D &position, QOpenGLShaderProgram &shader) {
+    void TrussScene::updateAlphaCutoff(QOpenGLShaderProgram &shader) {
         assert(shadersInitialized);
 
         shader.bind();
-        shader.setUniformValue("lightPos", position);
+        shader.setUniformValue("alphaCutoff", alpha_cutoff);
     }
 
 } // namespace tresta

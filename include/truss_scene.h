@@ -149,6 +149,7 @@ namespace tresta {
         float time;
         float camera_z0;
         float deformation_scale;
+        float alpha_cutoff;
         const float camera_inertia;
         bool shadersInitialized;
         bool renderOriginal;
@@ -175,7 +176,7 @@ namespace tresta {
         void updateModelMatrices(QOpenGLShaderProgram &shader);
 
         void updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader);
-        void updateLightPosition(const QVector3D &position, QOpenGLShaderProgram &shader);
+        void updateAlphaCutoff(QOpenGLShaderProgram &shader);
 
     };
 

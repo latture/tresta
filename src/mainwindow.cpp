@@ -54,10 +54,6 @@ namespace tresta {
         sendKey(Qt::Key_S);
     }
 
-    void MainWindow::setColorPressed() {
-        sendKey(Qt::Key_C);
-    }
-
     void MainWindow::zoomPressed()
     {
         sendKey(Qt::Key_Z);
@@ -79,6 +75,10 @@ namespace tresta {
 
     void MainWindow::exportPressed() {
         sendKey(Qt::Key_E);
+    }
+
+    void MainWindow::setColorPressed() {
+        sendKey(Qt::Key_C);
     }
 
     void MainWindow::alphaCutoffPressed() {
@@ -159,10 +159,6 @@ namespace tresta {
         setScaleAct->setStatusTip(tr("Set scale multiplier for deformations"));
         connect(setScaleAct, &QAction::triggered, this, &MainWindow::setScalePressed);
 
-        setColorAct = new QAction(QIcon(":/assets/gtk-select-color_32x32.png"), tr("&Choose colors"), this);
-        setColorAct->setStatusTip(tr("Choose colors for current scene"));
-        connect(setColorAct, &QAction::triggered, this, &MainWindow::setColorPressed);
-
         zoomAct = new QAction(QIcon(":/assets/zoom_32x32.png"), tr("Adjust camera &zoom"), this);
         zoomAct->setStatusTip(tr("Adjust camera zoom"));
         connect(zoomAct, &QAction::triggered, this, &MainWindow::zoomPressed);
@@ -182,6 +178,10 @@ namespace tresta {
         exportAct = new QAction(QIcon(":/assets/export.png"), tr("&Export current mesh to PLY file"), this);
         exportAct->setStatusTip(tr("Export current mesh"));
         connect(exportAct, &QAction::triggered, this, &MainWindow::exportPressed);
+
+        setColorAct = new QAction(QIcon(":/assets/gtk-select-color_32x32.png"), tr("&Choose colors"), this);
+        setColorAct->setStatusTip(tr("Choose colors for current scene"));
+        connect(setColorAct, &QAction::triggered, this, &MainWindow::setColorPressed);
 
         alphaCutoffAct = new QAction(QIcon(":/assets/alpha-cutoff_32x32.png"), tr("&Set alpha cutoff threshold"), this);
         alphaCutoffAct->setStatusTip(tr("Set alpha cutoff threshold"));
@@ -213,9 +213,9 @@ namespace tresta {
         editMenu->addAction(panAct);
         editMenu->addAction(rotateAct);
         editMenu->addAction(setScaleAct);
-        editMenu->addAction(setColorAct);
         editMenu->addAction(demoAct);
         editMenu->addAction(exportAct);
+        editMenu->addAction(setColorAct);
         editMenu->addAction(alphaCutoffAct);
 
         menuBar()->addSeparator();
@@ -278,9 +278,9 @@ namespace tresta {
         toolBar->addWidget(panButton);
         toolBar->addWidget(rotateButton);
         toolBar->addWidget(setScaleButton);
-        toolBar->addWidget(setColorButton);
         toolBar->addWidget(demoButton);
         toolBar->addWidget(exportButton);
+        toolBar->addWidget(setColorButton);
         toolBar->addWidget(alphaCutoffButton);
     }
 

@@ -92,7 +92,7 @@ namespace tresta {
         useUserColorsCheckBox->setEnabled(userColorsProvided);
 
         transparencyEnabledCheckBox = new QCheckBox(tr("Enable transparency"), this);
-        transparencyEnabledCheckBox->setChecked(false);
+        transparencyEnabledCheckBox->setChecked(true);
         connect(transparencyEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTransparencyEnabled(bool)));
         transparencyEnabledCheckBox->setEnabled(userColorsProvided);
     }

@@ -11,47 +11,49 @@ macx{
     LIBS += -stdlib=libc++ -mmacosx-version-min=10.10
 }
 
-CONFIG += c++11 fopenmp
-
-QT       += core gui opengl
-
-TARGET = Tresta
+CONFIG  += c++11 fopenmp
+QT      += core gui opengl concurrent
+TARGET   = tresta
 TEMPLATE = app
 
-INCLUDEPATH += $$PWD/ext \
+INCLUDEPATH += $$PWD \
+               $$PWD/ext \
                $$PWD/ext/eigen-3.2.5 \
                $$PWD/ext/boost_1_59_0 \
-               $$PWD/include \
                $$PWD/ext/rapidjson/include \
-               $$PWD
+               $$PWD/include
 
-SOURCES += src/main.cpp \
+SOURCES += src/color_dialog.cpp \
            src/cylinder.cpp \
+           src/demo_dialog.cpp \
+           src/main.cpp \
+           src/mainwindow.cpp \
+           src/ply_exporter.cpp \
            src/setup.cpp \
+           src/shape.cpp \
            src/sphere.cpp \
            src/truss_scene.cpp \
            src/window.cpp \
-           src/mainwindow.cpp \
            ext/boost_1_59_0/libs/smart_ptr/src/sp_collector.cpp \
            ext/boost_1_59_0/libs/smart_ptr/src/sp_debug_hooks.cpp
 
-HEADERS += include/containers.h \
-           include/cylinder.h \
-           include/sphere.h \
-           include/abstract_scene.h \
-           include/truss_scene.h \
-           include/window.h \
+HEADERS += include/abstract_scene.h \
+           include/color_dialog.h \
+           include/containers.h \
            include/csv_parser.h \
+           include/cylinder.h \
+           include/demo_dialog.h \
            include/glassert.h \
+           include/mainwindow.h \
+           include/ply_exporter.h \
            include/setup.h \
-           include/mainwindow.h
+           include/shape.h \
+           include/sphere.h \
+           include/truss_scene.h \
+           include/window.h
 
 OTHER_FILES += assets/shaders/*
-
-RESOURCES += resources.qrc
-
-FORMS += src/mainwindow.ui
-
-ICON = assets/logo_64x64.png
-
-DISTFILES += src/shaders/*
+RESOURCES   += resources.qrc
+FORMS       += src/mainwindow.ui
+ICON         = assets/logo_64x64.png
+DISTFILES   += assets/shaders/*

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <iostream>
-#include <qtconcurrentrun.h>
+#include <QtConcurrentRun>
 
 namespace tresta {
 

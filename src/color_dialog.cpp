@@ -12,7 +12,7 @@ namespace tresta {
         if (displacementsProvided)
             origColor.setAlphaF(0.5);
 
-        setModal(true);
+        setModal(false);
 
         QVBoxLayout *layout = new QVBoxLayout(this);
 

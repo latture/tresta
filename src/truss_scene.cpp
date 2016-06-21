@@ -207,7 +207,7 @@ namespace tresta {
                 break;
 
             case Qt::Key_C:
-                colorDialog.exec();
+                colorDialog.show();
                 break;
 
             case Qt::Key_E:

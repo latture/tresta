@@ -12,7 +12,7 @@ namespace tresta {
                                   std::vector<std::vector<T>> &data) {
             if (!config_doc.HasMember(variable.c_str())) {
                 throw std::runtime_error(
-                        (boost::format("Configuration file does not have requested member variable %s.") % variable).str()
+                    (boost::format("Configuration file does not have requested member variable %s.") % variable).str()
                 );
             }
 
@@ -26,7 +26,7 @@ namespace tresta {
             csv.parseToVector(filename, data);
             if (data.size() == 0) {
                 throw std::runtime_error(
-                        (boost::format("No data was loaded for variable %s.") % variable).str()
+                    (boost::format("No data was loaded for variable %s.") % variable).str()
                 );
             }
         }
@@ -120,7 +120,7 @@ namespace tresta {
 
             if (nodes_vec[i].size() != 3) {
                 throw std::runtime_error(
-                        (boost::format("Row %d in nodes does not specify x, y and z coordinates.") % i).str()
+                    (boost::format("Row %d in nodes does not specify x, y and z coordinates.") % i).str()
                 );
             }
             n << nodes_vec[i][0], nodes_vec[i][1], nodes_vec[i][2];
@@ -151,13 +151,13 @@ namespace tresta {
         for(size_t i = 0; i < elems_vec.size(); ++i) {
             if (elems_vec[i].size() != 2) {
                 throw std::runtime_error(
-                        (boost::format("Row %d in elems does not specify 2 nodal indices [nn1,nn2].") % i).str()
+                    (boost::format("Row %d in elems does not specify 2 nodal indices [nn1,nn2].") % i).str()
                 );
             }
             if (props_vec[i].size() < 3) {
                 throw std::runtime_error(
-                        (boost::format("Row %d in props does not specify at least 3 property values "
-                                               "[..., nx, ny, nz]") % i).str()
+                    (boost::format("Row %d in props does not specify at least 3 property values "
+                                   "[..., nx, ny, nz]") % i).str()
                 );
             }
             nx_idx = props_vec[i].size() - 3;
@@ -186,7 +186,7 @@ namespace tresta {
         for(size_t i = 0; i < disp_vec.size(); ++i) {
             if (disp_vec[i].size() != 6) {
                 throw std::runtime_error(
-                        (boost::format("Row %d in displacements does not specify x, y and z translations and rotations.") % i).str()
+                    (boost::format("Row %d in displacements does not specify x, y and z translations and rotations.") % i).str()
                 );
             }
             disp_out[i] << disp_vec[i][0], disp_vec[i][1], disp_vec[i][2],
@@ -212,7 +212,7 @@ namespace tresta {
         for (size_t i = 0; i < color_vec.size(); ++i) {
             if (color_vec[i].size() != 4) {
                 throw std::runtime_error(
-                        (boost::format("Row %d in colors does not specify [R, G, B, A] values.") % i).str()
+                    (boost::format("Row %d in colors does not specify [R, G, B, A] values.") % i).str()
                 );
             }
             color_out[i] = QColor::fromRgbF(color_vec[i][0], color_vec[i][1], color_vec[i][2], color_vec[i][3]);
@@ -229,8 +229,7 @@ namespace tresta {
 
         if (displacements.size() != nodes.size()) {
             throw std::runtime_error(
-                    (boost::format("Number of rows in displacements (%d) do not match the number number of nodes (%d).")
-                     % displacements.size() % nodes.size()).str()
+                (boost::format("Number of rows in displacements (%d) do not match the number number of nodes (%d).") % displacements.size() % nodes.size()).str()
             );
         }
 

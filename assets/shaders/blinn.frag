@@ -10,7 +10,7 @@ const vec4 specColor = vec4(1.0, 1.0, 1.0, 1.0);
 const vec4 sceneAmbient = vec4(0.3, 0.3, 0.3, 1.0);
 const float shininess = 50.0;
 const float tolerance = 1.e-6;
-const int numberOfLights = 2;
+const int numberOfLights = 4;
 
 out vec4 color;
 
@@ -34,6 +34,24 @@ lightSource light0 = lightSource(
 
 lightSource light1 = lightSource(
     vec4(-1.0, 0.0,  0.0, 0.0),
+    vec4(1.0,  1.0,  1.0, 1.0),
+    vec4(1.0,  1.0,  1.0, 1.0),
+    1.0, 0.0, 0.0,
+    180.0, 0.0,
+    vec3(0.0, 0.0, 0.0)
+);
+
+lightSource light2 = lightSource(
+    vec4(0.0,  0.0,  1.0, 0.0),
+    vec4(1.0,  1.0,  1.0, 1.0),
+    vec4(1.0,  1.0,  1.0, 1.0),
+    1.0, 0.0, 0.0,
+    180.0, 0.0,
+    vec3(0.0, 0.0, 0.0)
+);
+
+lightSource light3 = lightSource(
+    vec4(0.0,  0.0, -1.0, 0.0),
     vec4(1.0,  1.0,  1.0, 1.0),
     vec4(1.0,  1.0,  1.0, 1.0),
     1.0, 0.0, 0.0,
@@ -71,6 +89,8 @@ void main() {
 
     lights[0] = light0;
     lights[1] = light1;
+    lights[2] = light2;
+    lights[3] = light3;
 
     vec3 normalDirection = normalize(normalInterp);
     vec3 viewDirection = normalize(vec3(modelview_inv * vec4(0.0, 0.0, 0.0, 1.0) - vPosition));

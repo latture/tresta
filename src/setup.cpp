@@ -101,6 +101,13 @@ namespace tresta {
         rapidjson::FileReadStream config_stream(config_file_ptr, readBuffer, sizeof(readBuffer));
         config_doc.ParseStream(config_stream);
         fclose(config_file_ptr);
+
+        if (!config_doc.IsObject()) {
+            throw std::runtime_error(
+                (boost::format("Invalid configuration file: %s") % config_filename).str()
+            );
+        }
+
         return config_doc;
     }
 

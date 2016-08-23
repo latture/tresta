@@ -132,14 +132,9 @@ namespace tresta {
     std::vector<Elem> createElemVecFromJSON(const rapidjson::Document &config_doc) {
         std::vector< std::vector< unsigned int > > elems_vec;
         std::vector< std::vector< float > > props_vec;
-        try {
-            createVectorFromJSON(config_doc, "elems", elems_vec);
-            createVectorFromJSON(config_doc, "props", props_vec);
-        }
-        catch (std::runtime_error& e) {
-            throw;
-        }
 
+        createVectorFromJSON(config_doc, "elems", elems_vec);
+        createVectorFromJSON(config_doc, "props", props_vec);
 
         if (elems_vec.size() != props_vec.size()) {
             throw std::runtime_error("The number of rows in elems did not match props.");
@@ -173,12 +168,7 @@ namespace tresta {
         std::vector< std::vector< float > > disp_vec;
 
         if (config_doc.HasMember("displacements")) {
-            try {
-                createVectorFromJSON(config_doc, "displacements", disp_vec);
-            }
-            catch (std::runtime_error& e) {
-                throw;
-            }
+            createVectorFromJSON(config_doc, "displacements", disp_vec);
         }
 
         std::vector<Displacement> disp_out(disp_vec.size());
@@ -199,12 +189,7 @@ namespace tresta {
         std::vector<std::vector<float> > color_vec;
 
         if (config_doc.HasMember("colors")) {
-            try {
-                createVectorFromJSON(config_doc, "colors", color_vec);
-            }
-            catch (std::runtime_error &e) {
-                throw;
-            }
+            createVectorFromJSON(config_doc, "colors", color_vec);
         }
 
         std::vector<QColor> color_out(color_vec.size());
@@ -323,37 +308,26 @@ namespace tresta {
     }
 
     Job createJobFromJSON(const rapidjson::Document &config_doc) {
-        try {
-            std::vector<Node> nodes = createNodeVecFromJSON(config_doc);
-            std::vector<Elem> elems = createElemVecFromJSON(config_doc);
-            std::vector<Displacement> disp = createDisplacementVecFromJSON(config_doc);
-            std::vector<QColor> colors = createColorVecFromJSON(config_doc);
-            std::vector<std::vector<Node>> node_strips;
-            if (disp.size() > 0) {
-                node_strips = createNodeStrips(nodes, elems, disp, 1.0f);
-            }
-            if (colors.size() > 0 && elems.size() != colors.size()) {
-                throw std::runtime_error(
-                        (boost::format("Number of rows in colors (%d) do not match the number number of elements (%d).")
-                         % colors.size() % elems.size()).str()
-                );
-            }
+        std::vector<Node> nodes = createNodeVecFromJSON(config_doc);
+        std::vector<Elem> elems = createElemVecFromJSON(config_doc);
+        std::vector<Displacement> disp = createDisplacementVecFromJSON(config_doc);
+        std::vector<QColor> colors = createColorVecFromJSON(config_doc);
+        std::vector<std::vector<Node>> node_strips;
+        if (disp.size() > 0) {
+            node_strips = createNodeStrips(nodes, elems, disp, 1.0f);
+        }
+        if (colors.size() > 0 && elems.size() != colors.size()) {
+            throw std::runtime_error(
+                (boost::format("Number of rows in colors (%d) do not match the number number of elements (%d).") % colors.size() % elems.size()).str()
+            );
+        }
 
-            return Job(nodes, elems, disp, node_strips, colors);
-        }
-        catch (std::exception &e) {
-            throw;
-        }
+        return Job(nodes, elems, disp, node_strips, colors);
     }
 
     Job loadJobFromFilename(const std::string &config_filename) {
-        try {
-            rapidjson::Document config_doc = parseJSONConfig(config_filename);
-            return createJobFromJSON(config_doc);
-        }
-        catch (std::exception &e) {
-            throw;
-        }
+        rapidjson::Document config_doc = parseJSONConfig(config_filename);
+        return createJobFromJSON(config_doc);
     }
 
 } // namespace tresta

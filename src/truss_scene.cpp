@@ -161,7 +161,7 @@ namespace tresta {
     void TrussScene::demo(int frameNumber) {
         float tx = 0.0f;
         float ty = 0.0f;
-        float tz = 0.35f * camera_z0;
+        float tz = camera_z0;
 
         float rx = 10.0f;
         float ry = frameNumber % 360;

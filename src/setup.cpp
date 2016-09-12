@@ -216,8 +216,6 @@ namespace tresta {
                                                     const std::vector<Elem> &elems,
                                                     const std::vector<Displacement> &displacements,
                                                     const float scale) {
-        const unsigned int num_interp_points = 5;
-        std::vector<std::vector<Node>> node_strips_out(elems.size(), std::vector<Node>(num_interp_points));
 
         if (displacements.size() != nodes.size()) {
             throw std::runtime_error(
@@ -225,34 +223,42 @@ namespace tresta {
             );
         }
 
-        float tmp, tmpSq, tmpCube, tmp1, tmp2, tmp3, tmp4;
+        const unsigned int num_interp_points = 5;
         unsigned int nn1, nn2;
-
+        float element_length;
         Node nx, ny, node1, node2;
+        std::vector<std::vector<Node>> node_strips_out(elems.size(), std::vector<Node>(num_interp_points));
+        Eigen::Matrix<float, num_interp_points, 1> ip_1, ip_2, ip_3, ip_1_inv, tmp1, tmp2, tmp3, tmp4;
         Eigen::Matrix<float, 12, 12, Eigen::RowMajor> transform_matrix;
         Eigen::Matrix<float, 3, 3, Eigen::RowMajor> transform_components, inv_transform_components;
         Eigen::Matrix<float, 12, 1> global_disp, local_disp;
-        Eigen::Matrix<float, num_interp_points, 1> interp_points;
-        Eigen::Matrix<float, num_interp_points, 3, Eigen::RowMajor> local_pos_strip, global_disp_strip, global_pos_strip, global_combined;
-    	  Eigen::Matrix<float, 3, num_interp_points, Eigen::ColMajor> local_disp_strip;
+        Eigen::Matrix<float, num_interp_points, 3, Eigen::RowMajor> local_pos_strip, global_pos_strip, global_combined;
+        Eigen::Matrix<float, 3, num_interp_points, Eigen::RowMajor> local_disp_strip, global_disp_strip;
 
         transform_matrix.setZero();
-      	interp_points.setLinSpaced(num_interp_points, 0.0, 1.0);
+
+      	ip_1.setLinSpaced(num_interp_points, 0.0f, 1.0f);
+        ip_1_inv = 1.0f - ip_1.array();
+        ip_2 = ip_1.cwiseProduct(ip_1);
+        ip_3 = ip_2.cwiseProduct(ip_1);
+
+        tmp1 = 1.0f - 3.0f * ip_2.array() + 2.0f * ip_3.array();
+        tmp2 = ip_1 - 2.0f * ip_2 + ip_3;
+        tmp3 = 3.0f * ip_2 - 2.0f * ip_3;
+        tmp4 = -ip_2 + ip_3;
 
         for (unsigned int i = 0; i < elems.size(); ++i){
-            // get node numbers for current element
             nn1 = elems[i].node_numbers[0];
             nn2 = elems[i].node_numbers[1];
 
-            // fill node vectors with positions
             node1 = nodes[nn1];
             node2 = nodes[nn2];
 
             // calculate normal vector along element length
             nx = node2 - node1;
-            nx.normalize();
+            element_length = nx.norm();
+            nx /= element_length;
 
-            // update normal vector along local y-direction
             ny << elems[i].props.normal_vec;
             ny.normalize();
 
@@ -260,51 +266,24 @@ namespace tresta {
             updateTransforms(nx, ny, transform_matrix, transform_components);
             inv_transform_components = transform_components.inverse();
 
-            // update global displacement vector
-            for (unsigned int j = 0; j < DOF::NUM_DOFS; ++j)
-            {
-                global_disp(j) = displacements[nn1][j];
-                global_disp(DOF::NUM_DOFS + j) = displacements[nn2][j];
-            }
+            global_disp.block<6, 1>(0, 0) = displacements[nn1];
+            global_disp.block<6, 1>(6, 0) = displacements[nn2];
 
-            // update local displacement vector
             local_disp = transform_matrix * global_disp;
 
-            for (unsigned int k = 0; k < num_interp_points; ++k)
-            {
-                // pre-compute interpolation coefficients
-                tmp = interp_points(k);
-                tmpSq = tmp * interp_points(k);
-                tmpCube = tmpSq * interp_points(k);
+            // interpolate displacements between nodal end points
+            local_disp_strip.row(0) = local_disp(0) * ip_1_inv + local_disp(6) * ip_1;
+            local_disp_strip.row(1) = local_disp(1) * tmp1 + element_length * local_disp(5) * tmp2 + local_disp(7) * tmp3 + element_length * local_disp(11) * tmp4;
+            local_disp_strip.row(2) = local_disp(2) * tmp1 + element_length * local_disp(4) * tmp2 + local_disp(8) * tmp3 + element_length * local_disp(10) * tmp4;
 
-                tmp1 = 1.0f - 3.0f * tmpSq + 2.0f * tmpCube;
-                tmp2 = tmp - 2.0f * tmpSq + tmpCube;
-                tmp3 = 3.0f * tmpSq - 2.0f * tmpCube;
-                tmp4 = -tmpSq + tmpCube;
-
-                // assign values
-                local_disp_strip(0, k) = local_disp(0) * (1.0f - tmp) + local_disp(6) * tmp;
-          			local_disp_strip(1, k) = local_disp(1) * tmp1 + local_disp(5) * tmp2 + local_disp(7) * tmp3 + local_disp(11) * tmp4;
-          			local_disp_strip(2, k) = local_disp(2) * tmp1 + local_disp(4) * tmp2 + local_disp(8) * tmp3 + local_disp(10) * tmp4;
-            }
-
-            // update global interpolation points
-            for (unsigned int k = 0; k < num_interp_points; ++k)
-            {
-          			global_disp_strip.block<1, 3>(k, 0) = inv_transform_components * local_disp_strip.block<3, 1>(0, k);
-            }
+            // transform displacements from local to global space
+            global_disp_strip = inv_transform_components * local_disp_strip;
 
             // calculate the original position of the interpolated strip of points
-            for (unsigned int k = 0; k < num_interp_points; ++k)
-            {
-                tmp = interp_points(k);
-          			global_pos_strip.block<1, 3>(k, 0) = (1.0f - tmp) * node1 + tmp * node2;
-            }
+            global_pos_strip = ip_1_inv * node1.transpose() + ip_1 * node2.transpose();
 
-            // combine the global position with the displacement
-            global_combined = global_pos_strip + scale * global_disp_strip;
+            global_combined = global_pos_strip + scale * global_disp_strip.transpose();
 
-            // fill the current line strip with the points
             for (unsigned int j = 0; j < num_interp_points; ++j)
             {
                 node_strips_out[i][j] << global_combined(j, 0), global_combined(j, 1), global_combined(j, 2);

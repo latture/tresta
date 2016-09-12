@@ -83,7 +83,7 @@ void main() {
     Material material = Material(
         sceneAmbient,
         vColor,
-        clamp(1.3 * vColor, 0.0, 1.0),
+        vec4(1.0, 1.0, 1.0, 1.0),
         shininess
     );
 

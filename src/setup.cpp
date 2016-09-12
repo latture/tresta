@@ -234,10 +234,10 @@ namespace tresta {
         Eigen::Matrix<float, 12, 1> global_disp, local_disp;
         Eigen::Matrix<float, num_interp_points, 1> interp_points;
         Eigen::Matrix<float, num_interp_points, 3, Eigen::RowMajor> local_pos_strip, global_disp_strip, global_pos_strip, global_combined;
-    	Eigen::Matrix<float, 3, num_interp_points, Eigen::ColMajor> local_disp_strip;
+    	  Eigen::Matrix<float, 3, num_interp_points, Eigen::ColMajor> local_disp_strip;
 
         transform_matrix.setZero();
-    	interp_points.setLinSpaced(num_interp_points, 0.0, 1.0);
+      	interp_points.setLinSpaced(num_interp_points, 0.0, 1.0);
 
         for (unsigned int i = 0; i < elems.size(); ++i){
             // get node numbers for current element
@@ -284,21 +284,21 @@ namespace tresta {
 
                 // assign values
                 local_disp_strip(0, k) = local_disp(0) * (1.0f - tmp) + local_disp(6) * tmp;
-    			local_disp_strip(1, k) = local_disp(1) * tmp1 + local_disp(5) * tmp2 + local_disp(7) * tmp3 + local_disp(11) * tmp4;
-    			local_disp_strip(2, k) = local_disp(2) * tmp1 + local_disp(4) * tmp2 + local_disp(8) * tmp3 + local_disp(10) * tmp4;
+          			local_disp_strip(1, k) = local_disp(1) * tmp1 + local_disp(5) * tmp2 + local_disp(7) * tmp3 + local_disp(11) * tmp4;
+          			local_disp_strip(2, k) = local_disp(2) * tmp1 + local_disp(4) * tmp2 + local_disp(8) * tmp3 + local_disp(10) * tmp4;
             }
 
             // update global interpolation points
             for (unsigned int k = 0; k < num_interp_points; ++k)
             {
-    			global_disp_strip.block<1, 3>(k, 0) = inv_transform_components * local_disp_strip.block<3, 1>(0, k);
+          			global_disp_strip.block<1, 3>(k, 0) = inv_transform_components * local_disp_strip.block<3, 1>(0, k);
             }
 
             // calculate the original position of the interpolated strip of points
             for (unsigned int k = 0; k < num_interp_points; ++k)
             {
                 tmp = interp_points(k);
-    			global_pos_strip.block<1, 3>(k, 0) = (1.0f - tmp) * node1 + tmp * node2;
+          			global_pos_strip.block<1, 3>(k, 0) = (1.0f - tmp) * node1 + tmp * node2;
             }
 
             // combine the global position with the displacement

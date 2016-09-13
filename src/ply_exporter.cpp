@@ -14,7 +14,7 @@ namespace tresta {
     {
     }
 
-    void PlyExporter::operator()(const QString &fileName, const QString& description, 
+    void PlyExporter::operator()(const QString &fileName, const QString& description,
                                  const Shape *shape, const Job &job,
                                  const std::vector<QMatrix4x4> &vertexViewVector) {
         exportPly(fileName, description, shape, job, vertexViewVector);
@@ -56,7 +56,7 @@ namespace tresta {
             t3.waitForFinished();
 
             progress->close();
-        }                
+        }
     }
 
     bool PlyExporter::createPlyVertices(const Shape* shape, const Job& job, const std::vector<QMatrix4x4>& vertexViewVector) {
@@ -76,7 +76,7 @@ namespace tresta {
                 // copy original shape vertex and normal
                 for (size_t k = 0; k < vals_per_pt; ++k) {
                     originalPoint[k] = shape->vertices[vals_per_pt * j + k];
-                     originalNormal[k] = shape->normals[vals_per_pt * j + k];
+                    originalNormal[k] = shape->normals[vals_per_pt * j + k];
                 }
 
                 // transform into global position
@@ -87,7 +87,7 @@ namespace tresta {
                 // store result in output vector
                 for (size_t k = 0; k < vals_per_pt; ++k) {
                     tmp_vertices[i * pts_per_shape + j][k] = transformedPoint[k];
-                     tmp_vertices[i * pts_per_shape + j][k + vals_per_pt] = transformedNormal[k];
+                    tmp_vertices[i * pts_per_shape + j][k + vals_per_pt] = transformedNormal[k];
                 }
             }
 

@@ -435,7 +435,7 @@ namespace tresta {
             viewBuffers[k].bind();
             viewBuffers[k].allocate(&viewColVector[0], viewColVector.size() * sizeof(float));
         }
-    }    
+    }
 
     void TrussScene::setColorBuffer(const std::vector<QColor> &colors, QOpenGLBuffer &buffer) {
         std::vector<float> colorVector(4 * colors.size());

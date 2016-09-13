@@ -1,4 +1,4 @@
-#version 330
+#version 410
 in vec3 vertexPosition;
 in vec3 vertexNormal;
 in vec4 vertexViewCol1;

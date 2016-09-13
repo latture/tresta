@@ -387,7 +387,6 @@ namespace tresta {
                 for (int i = 0; i < qsl.size() - 1; ++i)
                     defFileName += qsl[0];
                 defFileName += QString("_deformed.") + qsl[qsl.size() - 1];
-                std::cout << defFileName.toStdString() << std::endl;
                 exporter.exportPly(defFileName, QString("Deformed mesh"), &cylinder, job, deformedVertexViewVector);
             }
         }

@@ -57,10 +57,6 @@ bool lessThan(float a, float b, float tolerance) {
     return (b - a) > ( (abs(a) < abs(b) ? abs(b) : abs(a)) * tolerance);
 }
 
-bool equal(float a, float b, float tolerance) {
-    return abs(a - b) <= ( (abs(a) < abs(b) ? abs(b) : abs(a)) * tolerance);
-}
-
 void main() {
     if (lessThan(vColor.w, alphaCutoff, tolerance))
         discard;

@@ -175,6 +175,7 @@ namespace tresta {
         void setColorBuffer(const std::vector<QColor> &colors, QOpenGLBuffer &buffer);
         void setVertexColor(QOpenGLBuffer &colorBuffer, GLuint divisor);
         void bindColBuffer(std::vector<QOpenGLBuffer> &colBuffer);
+        void releaseColBuffer(std::vector<QOpenGLBuffer> &colBuffer);
         void prepareVertexBuffers();
         void updateModelMatrices(QOpenGLShaderProgram &shader);
 

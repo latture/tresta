@@ -126,13 +126,18 @@ namespace tresta {
             bindColBuffer(defVertexViewColBuffers);
             setVertexColor(defColorBuffer, deformedVertexViewVector.size());
             mGLFunc->glDrawElementsInstanced(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0, deformedVertexViewVector.size());
+            releaseColBuffer(defVertexViewColBuffers);
         }
 
         if (renderOriginal) {
             bindColBuffer(vertexViewColBuffers);
             setVertexColor(origColorBuffer, vertexViewVector.size());
             mGLFunc->glDrawElementsInstanced(GL_TRIANGLES, cylinder.indices.size(), GL_UNSIGNED_SHORT, 0, vertexViewVector.size());
+            releaseColBuffer(vertexViewColBuffers);
         }
+
+        cylinder.mVAO.release();
+        mCylinderShader.release();
 
         glCheckError();
     }
@@ -142,6 +147,12 @@ namespace tresta {
             colBuffer[i].bind();
             mCylinderShader.setAttributeArray(vertexViewColNames[i].c_str(), GL_FLOAT, 0, 4);
             mGLFunc->glVertexAttribDivisor(mCylinderShader.attributeLocation(vertexViewColNames[i].c_str()), 1);
+        }
+    }
+
+    void TrussScene::releaseColBuffer(std::vector<QOpenGLBuffer> &colBuffer) {
+        for (size_t i = 0; i < colBuffer.size(); ++i) {
+            colBuffer[i].release();
         }
     }
 

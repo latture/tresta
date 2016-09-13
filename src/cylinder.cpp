@@ -13,7 +13,7 @@ namespace tresta {
 
     void Cylinder::initialize() {
 
-        const unsigned int sectors = 25;
+        const unsigned int sectors = 9;
         const unsigned int rings = 2;
 
         const float pi = 3.141592653589793238f;
@@ -105,7 +105,6 @@ namespace tresta {
              indices.push_back(rings * sectors);
              indices.push_back(rings * sectors + 3 + i);
              indices.push_back(rings * sectors + 2 + i);
-
          }
 
          // top disk indices
@@ -113,7 +112,6 @@ namespace tresta {
              indices.push_back(rings * sectors + 1);
              indices.push_back(rings * sectors + sectors + 2 + i);
              indices.push_back(rings * sectors + sectors + 3 + i);
-
          }
     }
 

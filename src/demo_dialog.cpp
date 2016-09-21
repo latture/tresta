@@ -12,7 +12,7 @@ namespace tresta {
         setMinimumWidth(400);
         setMinimumHeight(200);
 
-        QVBoxLayout *layout = new QVBoxLayout(this);
+        QVBoxLayout *layout = new QVBoxLayout();
         createGroupBox();
         layout->addWidget(groupBox);
         setLayout(layout);
@@ -73,14 +73,14 @@ namespace tresta {
         createLabel();
 
         groupBox = new QGroupBox(this);
-        QGridLayout *glayout = new QGridLayout(this);
+        QGridLayout *glayout = new QGridLayout();
         glayout->addWidget(chooseDirButton, 0, 0);
         glayout->addWidget(saveDirLineEdit, 0, 1);
 
         glayout->addWidget(prefixLabel, 1, 0);
         glayout->addWidget(prefixLineEdit, 1, 1);
 
-        QHBoxLayout *hlayout = new QHBoxLayout(this);
+        QHBoxLayout *hlayout = new QHBoxLayout();
         hlayout->addWidget(startButton);
         hlayout->addWidget(closeButton);
         glayout->addLayout(hlayout, 2, 0, 1, 2);

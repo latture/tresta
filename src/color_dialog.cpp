@@ -14,7 +14,7 @@ namespace tresta {
 
         setModal(false);
 
-        QVBoxLayout *layout = new QVBoxLayout(this);
+        QVBoxLayout *layout = new QVBoxLayout();
 
         createCheckBox(userColorsProvided);
         createChooseGroupBox(displacementsProvided);
@@ -99,7 +99,7 @@ namespace tresta {
 
     void ColorDialog::createChooseGroupBox(bool displacementsProvided) {
         chooseGroupBox = new QGroupBox(this);
-        QVBoxLayout *vlayout = new QVBoxLayout(chooseGroupBox);
+        QVBoxLayout *vlayout = new QVBoxLayout();
 
         origColorButton = new QPushButton("Choose Original Color", this);
         connect(origColorButton, SIGNAL(clicked()), this, SLOT(pickOrigColor()));
@@ -125,7 +125,7 @@ namespace tresta {
         alphaCutoffLabel = new QLabel(this);
         alphaCutoffLabel->setText("Alpha threshold:");
 
-        alphaCutoffLayout = new QHBoxLayout(this);
+        alphaCutoffLayout = new QHBoxLayout();
         alphaCutoffLayout->addWidget(alphaCutoffLabel);
         alphaCutoffLayout->addWidget(alphaCutoffSpinBox);
     }
@@ -135,4 +135,3 @@ namespace tresta {
         connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
     }
 } // namespace tresta
-

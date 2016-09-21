@@ -89,14 +89,14 @@ namespace tresta {
          * Sets the camera translation based on mouse movement.
          * @param dx Change in x-direction of mouse.
          * @param dy Change in y-direction of mouse.
-         */        
+         */
         void setTranslate(int dx, int dy);
 
         /**
          * Sets the camera zoom based on mouse movement.
          * @param dx Change in x-direction of mouse.
          * @param dy Change in y-direction of mouse.
-         */ 
+         */
         void setZoom(int dx, int dy);
 
 
@@ -181,7 +181,6 @@ namespace tresta {
 
         void updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader);
         void setAlphaCutoff(float cutoff, QOpenGLShaderProgram &shader);
-
     };
 
 } // namespace tresta

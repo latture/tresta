@@ -3,7 +3,7 @@ in vec4 vPosition;
 in vec4 vColor;
 in vec3 normalInterp;
 
-uniform float alphaCutoff = 0.01;
+uniform float alphaCutoff = 0.0;
 uniform mat4 modelview_inv;
 
 const vec3 specColor = vec3(1.0, 1.0, 1.0);

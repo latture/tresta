@@ -53,9 +53,9 @@ namespace tresta {
             Aelem(3, 3) = nx(0);
             Aelem(3, 4) = nx(1);
             Aelem(3, 5) = nx(2);
-            Aelem(4, 3) = ny(0);
-            Aelem(4, 4) = ny(1);
-            Aelem(4, 5) = ny(2);
+            Aelem(4, 3) = -ny(0);
+            Aelem(4, 4) = -ny(1);
+            Aelem(4, 5) = -ny(2);
             Aelem(5, 3) = nz(0);
             Aelem(5, 4) = nz(1);
             Aelem(5, 5) = nz(2);
@@ -73,16 +73,12 @@ namespace tresta {
             Aelem(9, 9) = nx(0);
             Aelem(9, 10) = nx(1);
             Aelem(9, 11) = nx(2);
-            Aelem(10, 9) = ny(0);
-            Aelem(10, 10) = ny(1);
-            Aelem(10, 11) = ny(2);
+            Aelem(10, 9) = -ny(0);
+            Aelem(10, 10) = -ny(1);
+            Aelem(10, 11) = -ny(2);
             Aelem(11, 9) = nz(0);
             Aelem(11, 10) = nz(1);
             Aelem(11, 11) = nz(2);
-
-            // flip rotations about the y-axis to account right-handed coordinate system
-            Aelem.block<3, 3>(3, 3) *= -1.0;
-            Aelem.block<3, 3>(9, 9) *= -1.0;
 
             // update tranformation components
             transform_components << nx(0), nx(1), nx(2),

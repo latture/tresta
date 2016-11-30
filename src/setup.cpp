@@ -80,6 +80,10 @@ namespace tresta {
             Aelem(11, 10) = nz(1);
             Aelem(11, 11) = nz(2);
 
+            // flip rotations about the y-axis to account right-handed coordinate system
+            Aelem.block<3, 3>(3, 3) *= -1.0;
+            Aelem.block<3, 3>(9, 9) *= -1.0;
+
             // update tranformation components
             transform_components << nx(0), nx(1), nx(2),
                                     ny(0), ny(1), ny(2),

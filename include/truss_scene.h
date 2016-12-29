@@ -178,7 +178,6 @@ namespace tresta {
         void releaseColBuffer(std::vector<QOpenGLBuffer> &colBuffer);
         void prepareVertexBuffers();
         void updateModelMatrices(QOpenGLShaderProgram &shader);
-
         void updateProjectionUniforms(int w, int h, QOpenGLShaderProgram &shader);
         void setAlphaCutoff(float cutoff, QOpenGLShaderProgram &shader);
     };
